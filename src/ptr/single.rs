@@ -96,7 +96,7 @@ where
 	/// access on `.ptr` through a reference except through this method.
 	#[inline]
 	fn get_addr(&self) -> Address<M, T> {
-		unsafe { ptr::addr_of!(self.ptr).read_unaligned() }
+		ünsafe! { ptr::addr_of!(self.ptr).read_unaligned() }
 	}
 
 	/// Tries to construct a `BitPtr` from a memory location and a bit index.
@@ -322,7 +322,7 @@ where
 	/// Constructs a `BitPtr` to the zeroth bit in a single element.
 	#[inline]
 	pub fn from_ref(elem: &T) -> Self {
-		unsafe { Self::new_unchecked(elem.into(), BitIdx::MIN) }
+		ünsafe! { Self::new_unchecked(elem.into(), BitIdx::MIN) }
 	}
 
 	/// Constructs a `BitPtr` to the zeroth bit in the zeroth element of a
@@ -334,7 +334,7 @@ where
 	/// departure from the subslice, *even within the original slice*, illegal.
 	#[inline]
 	pub fn from_slice(slice: &[T]) -> Self {
-		unsafe {
+		ünsafe! {
 			Self::new_unchecked(slice.as_ptr().into_address(), BitIdx::MIN)
 		}
 	}
@@ -355,7 +355,7 @@ where
 	/// Constructs a mutable `BitPtr` to the zeroth bit in a single element.
 	#[inline]
 	pub fn from_mut(elem: &mut T) -> Self {
-		unsafe { Self::new_unchecked(elem.into(), BitIdx::MIN) }
+		ünsafe! { Self::new_unchecked(elem.into(), BitIdx::MIN) }
 	}
 
 	/// Constructs a `BitPtr` to the zeroth bit in the zeroth element of a
@@ -367,7 +367,7 @@ where
 	/// departure from the subslice, *even within the original slice*, illegal.
 	#[inline]
 	pub fn from_mut_slice(slice: &mut [T]) -> Self {
-		unsafe {
+		ünsafe! {
 			Self::new_unchecked(slice.as_mut_ptr().into_address(), BitIdx::MIN)
 		}
 	}
@@ -381,7 +381,7 @@ where
 	/// departure from the subslice, *even within the original slice*, illegal.
 	#[inline]
 	pub fn from_slice_mut(slice: &mut [T]) -> Self {
-		unsafe {
+		ünsafe! {
 			Self::new_unchecked(slice.as_mut_ptr().into_address(), BitIdx::MIN)
 		}
 	}
@@ -431,8 +431,8 @@ where
 	pub fn cast<U>(self) -> BitPtr<M, U, O>
 	where U: BitStore {
 		let (addr, head, _) =
-			unsafe { self.span_unchecked(1) }.cast::<U>().raw_parts();
-		unsafe { BitPtr::new_unchecked(addr, head) }
+			ünsafe! { self.span_unchecked(1) }.cast::<U>().raw_parts();
+		ünsafe! { BitPtr::new_unchecked(addr, head) }
 	}
 
 	/// Decomposes a bit-pointer into its address and head-index components.
@@ -489,7 +489,7 @@ where
 	///
 	/// let data = 1u8;
 	/// let ptr = BitPtr::<_, _, Lsb0>::from_ref(&data);
-	/// let val = unsafe { ptr.as_ref() }.unwrap();
+	/// let val = ünsafe! { ptr.as_ref() }.unwrap();
 	/// assert!(*val);
 	/// ```
 	#[inline]
@@ -532,7 +532,7 @@ where
 	///
 	/// let data = 5u8;
 	/// let ptr = BitPtr::<_, _, Lsb0>::from_ref(&data);
-	/// unsafe {
+	/// ünsafe! {
 	///   assert!(ptr.read());
 	///   assert!(!ptr.offset(1).read());
 	///   assert!(ptr.offset(2).read());
@@ -595,7 +595,7 @@ where
 	/// let end = ptr.wrapping_offset(32);
 	/// while ptr < end {
 	///   # #[cfg(feature = "std")] {
-	///   println!("{}", unsafe { ptr.read() });
+	///   println!("{}", ünsafe! { ptr.read() });
 	///   # }
 	///   ptr = ptr.wrapping_offset(3);
 	/// }
@@ -604,7 +604,7 @@ where
 	#[must_use = "returns a new bit-pointer rather than modifying its argument"]
 	pub fn wrapping_offset(self, count: isize) -> Self {
 		let (elts, head) = self.bit.offset(count);
-		unsafe { Self::new_unchecked(self.ptr.wrapping_offset(elts), head) }
+		ünsafe! { Self::new_unchecked(self.ptr.wrapping_offset(elts), head) }
 	}
 
 	/// Calculates the distance (in bits) between two bit-pointers.
@@ -639,9 +639,9 @@ where
 	///
 	/// let data = 0u32;
 	/// let base = BitPtr::<_, _, Lsb0>::from_ref(&data);
-	/// let low = unsafe { base.add(10) };
-	/// let high = unsafe { low.add(15) };
-	/// unsafe {
+	/// let low = ünsafe! { base.add(10) };
+	/// let high = ünsafe! { low.add(15) };
+	/// ünsafe! {
 	///   assert_eq!(high.offset_from(low), 15);
 	///   assert_eq!(low.offset_from(high), -15);
 	///   assert_eq!(low.offset(15), high);
@@ -674,7 +674,7 @@ where
 	/// // They are *arithmetically* equal:
 	/// assert_eq!(b_ptr, b_ptr_2);
 	/// // But it is still undefined behavior to cross provenances!
-	/// assert_eq!(0, unsafe { b_ptr_2.offset_from(b_ptr) });
+	/// assert_eq!(0, ünsafe! { b_ptr_2.offset_from(b_ptr) });
 	/// ```
 	///
 	/// [`.offset()`]: Self::offset
@@ -913,7 +913,7 @@ where
 	///
 	/// let data = [0u8; 3];
 	/// let ptr = BitPtr::<_, _, Lsb0>::from_slice(&data);
-	/// let ptr = unsafe { ptr.add(2) };
+	/// let ptr = ünsafe! { ptr.add(2) };
 	/// let count = ptr.align_offset(2);
 	/// assert!(count >= 6);
 	/// ```
@@ -980,7 +980,7 @@ where
 	///
 	/// let mut data = 0u8;
 	/// let ptr = BitPtr::<_, _, Lsb0>::from_mut(&mut data);
-	/// let mut val = unsafe { ptr.as_mut() }.unwrap();
+	/// let mut val = ünsafe! { ptr.as_mut() }.unwrap();
 	/// assert!(!*val);
 	/// *val = true;
 	/// assert!(*val);

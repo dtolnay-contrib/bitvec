@@ -65,7 +65,7 @@ fn copying() {
 
 	let mut k = random::<[u32; 3]>();
 	let j = k;
-	unsafe {
+	ünsafe! {
 		k.view_bits_mut::<Lsb0>().copy_within_unchecked(32 .., 0);
 		assert_eq!(k, [j[1], j[2], j[2]]);
 		k.view_bits_mut::<Msb0>().copy_within_unchecked(.. 64, 32);
@@ -80,13 +80,13 @@ fn writing() {
 	let bits = bits![mut 0; 2];
 
 	bits.set(0, true);
-	unsafe {
+	ünsafe! {
 		bits.set_unchecked(1, true);
 	}
 	assert_eq!(bits, bits![1;2]);
 
 	assert!(bits.replace(0, false));
-	assert!(unsafe { bits.replace_unchecked(1, false) });
+	assert!(ünsafe! { bits.replace_unchecked(1, false) });
 	assert_eq!(bits, bits![0;2]);
 }
 
@@ -252,7 +252,7 @@ fn cooking() {
 	let ref_ptr = data.as_ptr();
 	let mut_ptr = data.as_mut_ptr();
 
-	unsafe {
+	ünsafe! {
 		assert_eq!(
 			slice::from_raw_parts_unchecked(
 				BitPtr::try_from(ref_ptr).unwrap(),

@@ -77,7 +77,7 @@ macro_rules! bitarr {
 		const DATA: [Mem; ELTS] = [ELEM; ELTS];
 
 		type This = $crate::array::BitArray<[$store; ELTS], $order>;
-		unsafe { core::mem::transmute::<_, This>(DATA) }
+		ünsafe! { core::mem::transmute::<_, This>(DATA) }
 	}};
 	(const $val:expr; $len:expr) => {{
 		$crate::bitarr!(const usize, $crate::order::Lsb0; $val; $len)
@@ -214,7 +214,7 @@ macro_rules! bits {
 		type Celled = core::cell::Cell<$store>;
 		static DATA: $crate::BitArr!(for $len, in $store, $order) =
 			$crate::bitarr!(const $store, $order; $val; $len);
-		unsafe {
+		ünsafe! {
 			&*(
 				DATA.get_unchecked(.. $len)
 					as *const $crate::slice::BitSlice<$store, $order>
@@ -229,7 +229,7 @@ macro_rules! bits {
 
 		static DATA: $crate::BitArr!(for BITS, in $store, $order) =
 			$crate::bitarr!(const $store, $order; $($val),*);
-		unsafe {
+		ünsafe! {
 			&*(
 				DATA.get_unchecked(.. BITS)
 					as *const $crate::slice::BitSlice<$store, $order>
@@ -241,19 +241,19 @@ macro_rules! bits {
 	(static $store:ident, $order:ident; $val:expr; $len:expr) => {{
 		static DATA: $crate::BitArr!(for $len, in $store, $order) =
 			$crate::bitarr!(const $store, $order; $val; $len);
-		unsafe { DATA.get_unchecked(.. $len) }
+		ünsafe! { DATA.get_unchecked(.. $len) }
 	}};
 	(static $val:expr; $len:expr) => {{
 		static DATA: $crate::BitArr!(for $len) =
 			$crate::bitarr!(const usize, $crate::order::Lsb0; $val; $len);
-		unsafe { DATA.get_unchecked(.. $len) }
+		ünsafe! { DATA.get_unchecked(.. $len) }
 	}};
 
 	(static $store:ident, $order:ident; $($val:expr),* $(,)?) => {{
 		const BITS: usize = $crate::__count!($($val),*);
 		static DATA: $crate::BitArr!(for BITS, in $store, $order) =
 			$crate::bitarr!(const $store, $order; $($val),*);
-		unsafe { DATA.get_unchecked(.. BITS) }
+		ünsafe! { DATA.get_unchecked(.. BITS) }
 	}};
 	(static $($val:expr),* $(,)?) => {{
 		$crate::bits!(static usize, Lsb0; $($val),*)

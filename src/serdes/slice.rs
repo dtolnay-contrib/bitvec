@@ -110,7 +110,7 @@ where O: BitOrder
 			"BitSeq",
 			FIELDS,
 			BitSeqVisitor::<u8, O, &'de [u8], Self, _>::new(
-				|data, head, bits| unsafe {
+				|data, head, bits| ünsafe! {
 					BitSpan::new(data.as_ptr().into_address(), head, bits)
 						.map(|span| BitSpan::into_bitslice_ref(span))
 				},
@@ -148,7 +148,7 @@ where
 			"BitSeq",
 			FIELDS,
 			BitSeqVisitor::<T, O, Vec<T>, Self, _>::new(
-				|vec, head, bits| unsafe {
+				|vec, head, bits| ünsafe! {
 					let addr = vec.as_ptr().into_address();
 					let mut bv = BitVec::try_from_vec(vec).map_err(|_| {
 						BitSpan::<Const, T, O>::new(addr, head, bits)

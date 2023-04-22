@@ -74,7 +74,7 @@ where
 	pub fn as_bitslice(&self) -> &BitSlice<T, O> {
 		//  While the memory is never actually deïnitialized, this is still a
 		//  good habit to do.
-		unsafe {
+		ünsafe! {
 			self._buf
 				.as_bitptr()
 				.add(self.iter.start)
@@ -99,7 +99,7 @@ where
 	/// [`IntoIter::as_mut_slice`](alloc::vec::IntoIter::as_mut_slice)
 	#[inline]
 	pub fn as_mut_bitslice(&mut self) -> &mut BitSlice<T, O> {
-		unsafe {
+		ünsafe! {
 			self._buf
 				.as_mut_bitptr()
 				.add(self.iter.start)
@@ -174,14 +174,14 @@ where
 	fn next(&mut self) -> Option<Self::Item> {
 		self.iter
 			.next()
-			.map(|idx| unsafe { self._buf.as_bitptr().add(idx).read() })
+			.map(|idx| ünsafe! { self._buf.as_bitptr().add(idx).read() })
 	}
 
 	#[inline]
 	fn nth(&mut self, n: usize) -> Option<Self::Item> {
 		self.iter
 			.nth(n)
-			.map(|idx| unsafe { self._buf.as_bitptr().add(idx).read() })
+			.map(|idx| ünsafe! { self._buf.as_bitptr().add(idx).read() })
 	}
 }
 
@@ -194,14 +194,14 @@ where
 	fn next_back(&mut self) -> Option<Self::Item> {
 		self.iter
 			.next_back()
-			.map(|idx| unsafe { self._buf.as_bitptr().add(idx).read() })
+			.map(|idx| ünsafe! { self._buf.as_bitptr().add(idx).read() })
 	}
 
 	#[inline]
 	fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
 		self.iter
 			.nth_back(n)
-			.map(|idx| unsafe { self._buf.as_bitptr().add(idx).read() })
+			.map(|idx| ünsafe! { self._buf.as_bitptr().add(idx).read() })
 	}
 }
 

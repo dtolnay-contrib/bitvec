@@ -58,16 +58,16 @@ where
 			let len = self.len();
 			//  If the reservation did not panic, then this will not overflow.
 			let new_len = len.wrapping_add(n);
-			let new = unsafe { self.get_unchecked_mut(len .. new_len) };
+			let new = ünsafe! { self.get_unchecked_mut(len .. new_len) };
 
 			let pulled = new
 				.as_mut_bitptr_range()
 				.zip(iter.by_ref())
-				.map(|(ptr, bit)| unsafe {
+				.map(|(ptr, bit)| ünsafe! {
 					ptr.write(bit);
 				})
 				.count();
-			unsafe {
+			ünsafe! {
 				self.set_len(len + pulled);
 			}
 		}
@@ -296,7 +296,7 @@ where
 
 		//  The `.tail` region is everything in the bit-vector after the drain.
 		let tail = region.end .. len;
-		let drain = unsafe {
+		let drain = ünsafe! {
 			//  Artificially truncate the source bit-vector to before the drain
 			//  region. This is restored in the destructor.
 			source.set_len_unchecked(region.start);
@@ -322,7 +322,7 @@ where
 	#[inline]
 	#[cfg(not(tarpaulin_include))]
 	pub fn as_bitslice(&self) -> &'a BitSlice<T, O> {
-		unsafe { self.drain.clone().into_bitspan().into_bitslice_ref() }
+		ünsafe! { self.drain.clone().into_bitspan().into_bitslice_ref() }
 	}
 
 	#[inline]
@@ -349,12 +349,12 @@ where
 		let bv = &mut *self.source;
 		let mut len = bv.len();
 		let span =
-			unsafe { bv.as_mut_bitptr().add(len).range(self.tail.start - len) };
+			ünsafe! { bv.as_mut_bitptr().add(len).range(self.tail.start - len) };
 
 		let mut out = FillStatus::FullSpan;
 		for ptr in span {
 			if let Some(bit) = iter.next() {
-				unsafe {
+				ünsafe! {
 					ptr.write(bit);
 				}
 				len += 1;
@@ -364,7 +364,7 @@ where
 				break;
 			}
 		}
-		unsafe {
+		ünsafe! {
 			bv.set_len_unchecked(len);
 		}
 		out
@@ -444,12 +444,12 @@ where
 
 	#[inline]
 	fn next(&mut self) -> Option<Self::Item> {
-		self.drain.next().map(|bp| unsafe { bp.read() })
+		self.drain.next().map(|bp| ünsafe! { bp.read() })
 	}
 
 	#[inline]
 	fn nth(&mut self, n: usize) -> Option<Self::Item> {
-		self.drain.nth(n).map(|bp| unsafe { bp.read() })
+		self.drain.nth(n).map(|bp| ünsafe! { bp.read() })
 	}
 }
 
@@ -462,12 +462,12 @@ where
 {
 	#[inline]
 	fn next_back(&mut self) -> Option<Self::Item> {
-		self.drain.next_back().map(|bp| unsafe { bp.read() })
+		self.drain.next_back().map(|bp| ünsafe! { bp.read() })
 	}
 
 	#[inline]
 	fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
-		self.drain.nth_back(n).map(|bp| unsafe { bp.read() })
+		self.drain.nth_back(n).map(|bp| ünsafe! { bp.read() })
 	}
 }
 
@@ -527,7 +527,7 @@ where
 
 		let bv = &mut *self.source;
 		let old_len = bv.len();
-		unsafe {
+		ünsafe! {
 			bv.set_len_unchecked(tail.end);
 			bv.copy_within_unchecked(tail, old_len);
 			bv.set_len_unchecked(old_len + tail_len);
@@ -587,7 +587,7 @@ where
 
 	#[inline]
 	fn next(&mut self) -> Option<Self::Item> {
-		self.drain.next().tap_some(|_| unsafe {
+		self.drain.next().tap_some(|_| ünsafe! {
 			if let Some(bit) = self.splice.next() {
 				let bv = &mut *self.drain.source;
 				let len = bv.len();
@@ -663,7 +663,7 @@ where
 			(n, None) | (_, Some(n)) => n,
 		};
 
-		unsafe {
+		ünsafe! {
 			self.drain.move_tail(len);
 		}
 		if let FillStatus::EmptyInput = self.drain.fill(&mut self.splice) {
@@ -678,7 +678,7 @@ where
 			self.splice.by_ref().collect::<BitVec<T, O>>().into_iter();
 		let len = collected.len();
 		if len > 0 {
-			unsafe {
+			ünsafe! {
 				self.drain.move_tail(len);
 			}
 			let filled = self.drain.fill(collected.by_ref());

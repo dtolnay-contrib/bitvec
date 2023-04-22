@@ -257,7 +257,7 @@ mod tests {
 	fn touch_memory() {
 		let data = Cell::new(0u8);
 		let accessor = &data;
-		let aliased = unsafe { &*(&data as *const _ as *const BitSafeU8) };
+		let aliased = ünsafe! { &*(&data as *const _ as *const BitSafeU8) };
 
 		assert!(!BitAccess::write_bit::<Lsb0>(
 			accessor,

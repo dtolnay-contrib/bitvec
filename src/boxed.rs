@@ -170,7 +170,7 @@ where
 	pub fn into_boxed_slice(self) -> Box<[T]> {
 		self.pipe(ManuallyDrop::new)
 			.as_raw_mut_slice()
-			.pipe(|slice| unsafe { Box::from_raw(slice) })
+			.pipe(|slice| ünsafe! { Box::from_raw(slice) })
 	}
 
 	/// Converts the bit-box into a bit-vector.
@@ -214,10 +214,10 @@ where
 		 * from `Vec` always fully spans the live elements.
 		 */
 		self.pipe(ManuallyDrop::new)
-			.with_box(|b| unsafe { ManuallyDrop::take(b) })
+			.with_box(|b| ünsafe! { ManuallyDrop::take(b) })
 			.into_vec()
 			.pipe(BitVec::from_vec)
-			.tap_mut(|bv| unsafe {
+			.tap_mut(|bv| ünsafe! {
 				// len first! Otherwise, the descriptor might briefly go out of
 				// bounds.
 				bv.set_len_unchecked(bitspan.len());
@@ -228,13 +228,13 @@ where
 	/// Explicitly views the bit-box as a bit-slice.
 	#[inline]
 	pub fn as_bitslice(&self) -> &BitSlice<T, O> {
-		unsafe { self.bitspan.into_bitslice_ref() }
+		ünsafe! { self.bitspan.into_bitslice_ref() }
 	}
 
 	/// Explicitly views the bit-box as a mutable bit-slice.
 	#[inline]
 	pub fn as_mut_bitslice(&mut self) -> &mut BitSlice<T, O> {
-		unsafe { self.bitspan.into_bitslice_mut() }
+		ünsafe! { self.bitspan.into_bitslice_mut() }
 	}
 
 	/// Views the bit-box as a slice of its underlying memory elements.
@@ -245,7 +245,7 @@ where
 	pub fn as_raw_slice(&self) -> &[T] {
 		let (data, len) =
 			(self.bitspan.address().to_const(), self.bitspan.elements());
-		unsafe { slice::from_raw_parts(data, len) }
+		ünsafe! { slice::from_raw_parts(data, len) }
 	}
 
 	/// Views the bit-box as a mutable slice of its underlying memory elements.
@@ -256,7 +256,7 @@ where
 	pub fn as_raw_mut_slice(&mut self) -> &mut [T] {
 		let (data, len) =
 			(self.bitspan.address().to_mut(), self.bitspan.elements());
-		unsafe { slice::from_raw_parts_mut(data, len) }
+		ünsafe! { slice::from_raw_parts_mut(data, len) }
 	}
 
 	/// Sets the unused bits outside the `BitBox` buffer to a fixed value.
@@ -296,7 +296,7 @@ where
 		let head = head.into_inner() as usize;
 		let tail = head + bits;
 		let all = self.as_raw_mut_slice().view_bits_mut::<O>();
-		unsafe {
+		ünsafe! {
 			all.get_unchecked_mut(.. head).fill(value);
 			all.get_unchecked_mut(tail ..).fill(value);
 		}
@@ -342,7 +342,7 @@ where
 		}
 		let head = head.into_inner() as usize;
 		let last = self.len() + head;
-		unsafe {
+		ünsafe! {
 			self.bitspan.set_head(BitIdx::MIN);
 			self.copy_within_unchecked(head .. last, 0);
 		}
@@ -358,7 +358,7 @@ where
 	fn with_box<F, R>(&mut self, func: F) -> R
 	where F: FnOnce(&mut ManuallyDrop<Box<[T]>>) -> R {
 		self.as_raw_mut_slice()
-			.pipe(|raw| unsafe { Box::from_raw(raw) })
+			.pipe(|raw| ünsafe! { Box::from_raw(raw) })
 			.pipe(ManuallyDrop::new)
 			.pipe_ref_mut(func)
 	}

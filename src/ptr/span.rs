@@ -181,7 +181,7 @@ where
 			return Err(BitSpanError::TooHigh(addr.to_const()));
 		}
 
-		Ok(unsafe { Self::new_unchecked(addr, head, bits) })
+		Ok(ünsafe! { Self::new_unchecked(addr, head, bits) })
 	}
 
 	/// Creates a new bit-span from its components, without any validity checks.
@@ -255,7 +255,7 @@ where
 			.wrapping_add(addr & Self::PTR_ADDR_MASK)
 			.wrapping_sub(addr)
 			.cast::<T>();
-		Address::new(unsafe { NonNull::new_unchecked(ptr) })
+		Address::new(ünsafe! { NonNull::new_unchecked(ptr) })
 	}
 
 	/// Overwrites the data pointer with a new address. This method does not
@@ -296,7 +296,7 @@ where
 		let ptr = self.ptr.as_ptr() as usize;
 		let ptr_head = (ptr & Self::PTR_HEAD_MASK) << Self::LEN_HEAD_BITS;
 		let len_head = self.len & Self::LEN_HEAD_MASK;
-		unsafe { BitIdx::new_unchecked((ptr_head | len_head) as u8) }
+		ünsafe! { BitIdx::new_unchecked((ptr_head | len_head) as u8) }
 	}
 
 	/// Writes a new `head` value into the pointer, with no other effects.
@@ -532,7 +532,7 @@ where
 	/// This is **not** a noöp: the base address and starting bit index are
 	/// decoded into the bit-pointer structure.
 	pub(crate) fn to_bitptr(self) -> BitPtr<M, T, O> {
-		unsafe { BitPtr::new_unchecked(self.address(), self.head()) }
+		ünsafe! { BitPtr::new_unchecked(self.address(), self.head()) }
 	}
 
 	/// Produces a bit-pointer range to either end of the span.
@@ -541,7 +541,7 @@ where
 	/// construct the range.
 	pub(crate) fn to_bitptr_range(self) -> BitPtrRange<M, T, O> {
 		let start = self.to_bitptr();
-		let end = unsafe { start.add(self.len()) };
+		let end = ünsafe! { start.add(self.len()) };
 		BitPtrRange { start, end }
 	}
 
@@ -550,7 +550,7 @@ where
 	/// This is a noöp.
 	pub(crate) fn to_bitslice_addr(self) -> Address<M, BitSlice<T, O>> {
 		(self.into_bitslice_ptr() as *mut BitSlice<T, O>)
-			.pipe(|ptr| unsafe { NonNull::new_unchecked(ptr) })
+			.pipe(|ptr| ünsafe! { NonNull::new_unchecked(ptr) })
 			.pipe(Address::new)
 	}
 
@@ -559,7 +559,7 @@ where
 	/// This is a noöp.
 	pub(crate) fn to_bitslice<'a>(self) -> Reference<'a, M, BitSlice<T, O>>
 	where Address<M, BitSlice<T, O>>: Referential<'a> {
-		unsafe { self.to_bitslice_addr().to_ref() }
+		ünsafe! { self.to_bitslice_addr().to_ref() }
 	}
 }
 
@@ -576,7 +576,7 @@ where
 			None => return Self::EMPTY,
 		};
 		let ptr = slice_nn.cast::<()>();
-		let len = unsafe { slice_nn.as_ref() }.len();
+		let len = ünsafe! { slice_nn.as_ref() }.len();
 		Self {
 			ptr,
 			len,

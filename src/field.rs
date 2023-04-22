@@ -590,7 +590,7 @@ where
 	let size_t = mem::size_of::<T>();
 	let size_u = mem::size_of::<U>();
 
-	unsafe {
+	ünsafe! {
 		resize_inner::<T, U>(&value, &mut out, size_t, size_u);
 	}
 

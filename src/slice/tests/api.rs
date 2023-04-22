@@ -47,7 +47,7 @@ fn getters() {
 	last.commit(true);
 
 	*bits.get_mut(2).unwrap() = true;
-	unsafe {
+	ünsafe! {
 		assert!(*bits.get_unchecked(2));
 		bits.get_unchecked_mut(2).commit(false);
 	}

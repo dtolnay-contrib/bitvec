@@ -33,7 +33,7 @@ where
 				*slot = byte.load_be();
 				count += 1;
 			});
-		*self = unsafe { self.get_unchecked(count * bits_of::<u8>() ..) };
+		*self = ünsafe! { self.get_unchecked(count * bits_of::<u8>() ..) };
 		Ok(count)
 	}
 }
@@ -48,13 +48,13 @@ where
 	#[inline]
 	fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
 		let mut count = 0;
-		unsafe { self.chunks_exact_mut(bits_of::<u8>()).remove_alias() }
+		(ünsafe! { self.chunks_exact_mut(bits_of::<u8>()).remove_alias() })
 			.zip(buf.iter().copied())
 			.for_each(|(slot, byte)| {
 				slot.store_be(byte);
 				count += 1;
 			});
-		*self = unsafe {
+		*self = ünsafe! {
 			mem::take(self).get_unchecked_mut(count * bits_of::<u8>() ..)
 		};
 		Ok(count)
@@ -95,7 +95,7 @@ where
 	fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
 		let len = self.len();
 		self.resize(len + buf.len() * bits_of::<u8>(), false);
-		unsafe { self.get_unchecked_mut(len ..) }.write(buf)
+		(ünsafe! { self.get_unchecked_mut(len ..) }).write(buf)
 	}
 
 	#[inline]

@@ -208,7 +208,7 @@ where
 {
 	#[inline]
 	fn drop(&mut self) {
-		self.with_box(|b| unsafe { ManuallyDrop::drop(b) })
+		self.with_box(|b| ünsafe! { ManuallyDrop::drop(b) })
 	}
 }
 

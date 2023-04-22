@@ -125,13 +125,13 @@ unsafe impl BitOrder for Lsb0 {
 	#[inline]
 	fn at<R>(index: BitIdx<R>) -> BitPos<R>
 	where R: BitRegister {
-		unsafe { BitPos::new_unchecked(index.into_inner()) }
+		ünsafe! { BitPos::new_unchecked(index.into_inner()) }
 	}
 
 	#[inline]
 	fn select<R>(index: BitIdx<R>) -> BitSel<R>
 	where R: BitRegister {
-		unsafe { BitSel::new_unchecked(R::ONE << index.into_inner()) }
+		ünsafe! { BitSel::new_unchecked(R::ONE << index.into_inner()) }
 	}
 
 	#[inline]
@@ -172,7 +172,7 @@ unsafe impl BitOrder for Msb0 {
 	#[inline]
 	fn at<R>(index: BitIdx<R>) -> BitPos<R>
 	where R: BitRegister {
-		unsafe { BitPos::new_unchecked(R::MASK - index.into_inner()) }
+		ünsafe! { BitPos::new_unchecked(R::MASK - index.into_inner()) }
 	}
 
 	#[inline]
@@ -184,7 +184,7 @@ unsafe impl BitOrder for Msb0 {
 		 * a constant that is shifted.
 		 */
 		let msbit: R = R::ONE << R::MASK;
-		unsafe { BitSel::new_unchecked(msbit >> index.into_inner()) }
+		ünsafe! { BitSel::new_unchecked(msbit >> index.into_inner()) }
 	}
 
 	#[inline]
@@ -271,7 +271,7 @@ where
 
 	for n in 0 .. bits_of::<R>() as u8 {
 		//  Wrap the counter as an index.
-		let idx = unsafe { BitIdx::<R>::new_unchecked(n) };
+		let idx = ünsafe! { BitIdx::<R>::new_unchecked(n) };
 
 		//  Compute the bit position for the index.
 		let pos = O::at::<R>(idx);

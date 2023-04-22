@@ -107,7 +107,7 @@ where
 			.pipe(Vec::<T>::with_capacity)
 			.pipe(ManuallyDrop::new);
 		let (addr, capacity) = (vec.as_mut_ptr(), vec.capacity());
-		let bitspan = BitSpan::uninhabited(unsafe { addr.into_address() });
+		let bitspan = BitSpan::uninhabited(ünsafe! { addr.into_address() });
 		Self { bitspan, capacity }
 	}
 
@@ -135,7 +135,7 @@ where
 	///
 	/// let bv = bitvec![0, 1, 0, 0, 1];
 	/// let (bitptr, len, capa) = bv.into_raw_parts();
-	/// let bv2 = unsafe {
+	/// let bv2 = ünsafe! {
 	///   BitVec::from_raw_parts(bitptr, len, capa)
 	/// };
 	/// assert_eq!(bv2, bits![0, 1, 0, 0, 1]);
@@ -358,7 +358,7 @@ where
 	#[inline]
 	pub fn truncate(&mut self, new_len: usize) {
 		if new_len < self.len() {
-			unsafe {
+			ünsafe! {
 				self.set_len_unchecked(new_len);
 			}
 		}
@@ -426,7 +426,7 @@ where
 	/// use bitvec::prelude::*;
 	///
 	/// let mut bv = bitvec![0, 1, 0, 0, 1];
-	/// unsafe {
+	/// ünsafe! {
 	///   // The default storage type, `usize`, is at least 32 bits.
 	///   bv.set_len(32);
 	/// }
@@ -479,7 +479,7 @@ where
 	pub fn swap_remove(&mut self, index: usize) -> bool {
 		self.assert_in_bounds(index, 0 .. self.len());
 		let last = self.len() - 1;
-		unsafe {
+		ünsafe! {
 			self.swap_unchecked(index, last);
 			self.set_len(last);
 			*self.get_unchecked(last)
@@ -503,7 +503,7 @@ where
 	pub fn insert(&mut self, index: usize, value: bool) {
 		self.assert_in_bounds(index, 0 ..= self.len());
 		self.push(value);
-		unsafe { self.get_unchecked_mut(index ..) }.rotate_right(1);
+		(ünsafe! { self.get_unchecked_mut(index ..) }).rotate_right(1);
 	}
 
 	/// Removes a bit at a given position, shifting all bits after it one spot
@@ -522,7 +522,7 @@ where
 	pub fn remove(&mut self, index: usize) -> bool {
 		self.assert_in_bounds(index, 0 .. self.len());
 		let last = self.len() - 1;
-		unsafe {
+		ünsafe! {
 			self.get_unchecked_mut(index ..).rotate_left(1);
 			let out = *self.get_unchecked(last);
 			self.set_len(last);
@@ -564,9 +564,9 @@ where
 		//  Advance until the *first* hole is created. This avoids writing into
 		//  the bit-slice when no change takes place.
 		for (idx, bitptr) in reader.by_ref() {
-			let bit = unsafe { bitptr.read() };
+			let bit = ünsafe! { bitptr.read() };
 			if func(idx, &bit) {
-				hole_ptr = unsafe { hole_ptr.add(1) };
+				hole_ptr = ünsafe! { hole_ptr.add(1) };
 			}
 			else {
 				len -= 1;
@@ -576,9 +576,9 @@ where
 		//  Now that a hole exists, switch to a loop that always writes into the
 		//  hole pointer.
 		for (idx, bitptr) in reader {
-			let bit = unsafe { bitptr.read() };
+			let bit = ünsafe! { bitptr.read() };
 			if func(idx, &bit) {
-				hole_ptr = unsafe {
+				hole_ptr = ünsafe! {
 					hole_ptr.write(bit);
 					hole_ptr.add(1)
 				};
@@ -588,7 +588,7 @@ where
 			}
 		}
 		//  Discard the bits that did not survive the predicate.
-		unsafe {
+		ünsafe! {
 			self.set_len_unchecked(len);
 		}
 	}
@@ -623,7 +623,7 @@ where
 			self.with_vec(|vec| vec.push(T::ZERO));
 		}
 		//  Write `value` into the now-safely-allocated `len` slot.
-		unsafe {
+		ünsafe! {
 			self.set_len_unchecked(new_len);
 			self.set_unchecked(len, value);
 		}
@@ -651,7 +651,7 @@ where
 	pub fn pop(&mut self) -> Option<bool> {
 		match self.len() {
 			0 => None,
-			n => unsafe {
+			n => ünsafe! {
 				let new_len = n - 1;
 				let out = Some(*self.get_unchecked(new_len));
 				self.set_len_unchecked(new_len);
@@ -810,7 +810,7 @@ where
 	pub fn split_off(&mut self, at: usize) -> Self {
 		let len = self.len();
 		self.assert_in_bounds(at, 0 ..= len);
-		let (this, that) = unsafe {
+		let (this, that) = ünsafe! {
 			self.bitspan
 				.into_bitslice_mut()
 				.split_at_unchecked_mut_noalias(at)
@@ -849,11 +849,11 @@ where
 		let old_len = self.len();
 		self.resize(new_len, false);
 		if new_len > old_len {
-			for (bitptr, idx) in unsafe { self.get_unchecked_mut(old_len ..) }
+			for (bitptr, idx) in ünsafe! { self.get_unchecked_mut(old_len ..) }
 				.as_mut_bitptr_range()
 				.zip(old_len ..)
 			{
-				unsafe {
+				ünsafe! {
 					bitptr.write(func(idx));
 				}
 			}
@@ -884,7 +884,7 @@ where
 	/// static_bits.set(0, true);
 	/// assert_eq!(static_bits, bits![1, 0, 1]);
 	///
-	/// let bb = unsafe { BitBox::from_raw(static_bits) };
+	/// let bb = ünsafe! { BitBox::from_raw(static_bits) };
 	/// // static_bits may no longer be used.
 	/// drop(bb); // explicitly reap memory before program exit
 	/// ```
@@ -917,7 +917,7 @@ where
 		let len = self.len();
 		if new_len > len {
 			self.reserve(new_len - len);
-			unsafe {
+			ünsafe! {
 				self.set_len(new_len);
 				self.get_unchecked_mut(len .. new_len).fill(value);
 			}
@@ -967,7 +967,7 @@ where
 		let src = src.normalize(0, old_len);
 		self.assert_in_bounds(src.end, 0 .. old_len);
 		self.resize(old_len + src.len(), false);
-		unsafe {
+		ünsafe! {
 			self.copy_within_unchecked(src, old_len);
 		}
 	}

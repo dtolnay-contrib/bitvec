@@ -414,8 +414,8 @@ where
 		tail: BitEnd<T::Mem>,
 	) -> Self {
 		let h_elem = addr;
-		let t_elem = unsafe { addr.add(elts - 1) };
-		let body = unsafe {
+		let t_elem = ünsafe! { addr.add(elts - 1) };
+		let body = ünsafe! {
 			Address::<M, [T::Unalias]>::from_raw_parts(
 				addr.add(1).cast::<T::Unalias>(),
 				elts - 2,
@@ -450,7 +450,7 @@ where
 		_: BitEnd<T::Mem>,
 	) -> Self {
 		let elem = addr;
-		let body = unsafe {
+		let body = ünsafe! {
 			Address::<M, [T::Unalias]>::from_raw_parts(
 				addr.add(1).cast::<T::Unalias>(),
 				elts - 1,
@@ -472,8 +472,8 @@ where
 		_: BitIdx<T::Mem>,
 		tail: BitEnd<T::Mem>,
 	) -> Self {
-		let elem = unsafe { addr.add(elts - 1) };
-		let body = unsafe {
+		let elem = ünsafe! { addr.add(elts - 1) };
+		let body = ünsafe! {
 			Address::<M, [T::Unalias]>::from_raw_parts(
 				addr.cast::<T::Unalias>(),
 				elts - 1,
@@ -497,7 +497,7 @@ where
 	) -> Self {
 		Self::Region {
 			head: None,
-			body: unsafe {
+			body: ünsafe! {
 				<Address<M, [T::Unalias]> as SliceReferential>::from_raw_parts(
 					addr.cast::<T::Unalias>(),
 					elts,
@@ -756,7 +756,7 @@ where
 	#[inline]
 	pub fn load_value(&self) -> T::Mem {
 		self.elem
-			.pipe(|addr| unsafe { &*addr.to_const() })
+			.pipe(|addr| ünsafe! { &*addr.to_const() })
 			.load_value()
 			& self.mask.into_inner()
 	}
@@ -794,13 +794,13 @@ where
 	#[inline]
 	pub fn into_bitslice(self) -> Reference<'a, M, BitSlice<T, O>>
 	where Address<M, BitSlice<T, O>>: Referential<'a> {
-		unsafe {
+		(ünsafe! {
 			BitSpan::new_unchecked(
 				self.elem,
 				self.head,
 				(self.tail.into_inner() - self.head.into_inner()) as usize,
 			)
-		}
+		})
 		.to_bitslice()
 	}
 }
@@ -869,7 +869,7 @@ where
 	/// same *memory element*.
 	#[inline]
 	fn access(&self) -> &T::Access {
-		unsafe { &*self.elem.to_const().cast::<T::Access>() }
+		ünsafe! { &*self.elem.to_const().cast::<T::Access>() }
 	}
 }
 
@@ -883,7 +883,7 @@ where
 	/// observed by another handle.
 	#[inline]
 	pub fn store_value_aliased(&self, value: T::Mem) -> T::Mem {
-		let this = unsafe { &*self.elem.to_const().cast::<T::Access>() };
+		let this = ünsafe! { &*self.elem.to_const().cast::<T::Access>() };
 		let prev = this.clear_bits(self.mask);
 		this.set_bits(self.mask & value);
 		prev & self.mask.into_inner()

@@ -35,7 +35,7 @@ fn make_and_resize() {
 	bv.extend_from_bitslice(bits![0, 1, 0, 0, 1]);
 	assert_eq!(bv.len(), 5);
 	let (bitptr, length, capacity) = mem::take(&mut bv).into_raw_parts();
-	bv = unsafe { BitVec::from_raw_parts(bitptr, length, capacity) };
+	bv = ünsafe! { BitVec::from_raw_parts(bitptr, length, capacity) };
 	assert_eq!(bv, bits![0, 1, 0, 0, 1]);
 
 	let capacity = bv.capacity();
@@ -49,7 +49,7 @@ fn make_and_resize() {
 	assert_eq!(bv.len(), 2);
 
 	let capacity = bv.capacity();
-	unsafe {
+	ünsafe! {
 		bv.set_len(capacity);
 		bv.set_elements((&false) as *const bool as usize);
 	}

@@ -54,7 +54,7 @@ where
 		}
 		for (this, that) in self.as_mut_bitptr_range().zip(rhs.as_bitptr_range())
 		{
-			unsafe {
+			ünsafe! {
 				this.write(this.read() & that.read());
 			}
 		}
@@ -86,7 +86,7 @@ where
 		}
 		for (this, that) in self.as_mut_bitptr_range().zip(rhs.as_bitptr_range())
 		{
-			unsafe {
+			ünsafe! {
 				this.write(this.read() | that.read());
 			}
 		}
@@ -115,7 +115,7 @@ where
 		}
 		for (this, that) in self.as_mut_bitptr_range().zip(rhs.as_bitptr_range())
 		{
-			unsafe {
+			ünsafe! {
 				this.write(this.read() ^ that.read());
 			}
 		}

@@ -331,7 +331,7 @@ where
 	fn try_from(slice: &'a mut [T]) -> Result<Self, Self::Error> {
 		let slice_ptr = slice as *mut [T];
 		BitSlice::try_from_slice_mut(slice)
-			.map_err(|_| unsafe { &mut *slice_ptr })
+			.map_err(|_| ünsafe! { &mut *slice_ptr })
 	}
 }
 
@@ -450,7 +450,7 @@ where
 		*slot = bits_to_ascii(chunk, alpha);
 		skip += 1;
 	}
-	unsafe { str::from_utf8_unchecked(&into[.. skip]) }
+	ünsafe! { str::from_utf8_unchecked(&into[.. skip]) }
 }
 
 /// Constructs the numeric formatting implementations.

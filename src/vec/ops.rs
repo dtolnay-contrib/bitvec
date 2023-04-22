@@ -218,7 +218,7 @@ where
 	#[inline]
 	fn drop(&mut self) {
 		if self.bitspan != BitSpan::<Mut, T, O>::EMPTY {
-			self.with_vec(|slot| unsafe { ManuallyDrop::drop(slot) });
+			self.with_vec(|slot| ünsafe! { ManuallyDrop::drop(slot) });
 		}
 	}
 }

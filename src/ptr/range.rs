@@ -333,7 +333,7 @@ where
 			self.start = self.end;
 			return None;
 		}
-		self.start = unsafe { self.start.add(n) };
+		self.start = ünsafe! { self.start.add(n) };
 		Some(self.take_front())
 	}
 }
@@ -358,7 +358,7 @@ where
 			self.end = self.start;
 			return None;
 		}
-		let out = unsafe { self.end.sub(n.wrapping_add(1)) };
+		let out = ünsafe! { self.end.sub(n.wrapping_add(1)) };
 		self.end = out;
 		Some(out)
 	}
@@ -372,7 +372,7 @@ where
 {
 	#[inline]
 	fn len(&self) -> usize {
-		(unsafe { self.end.offset_from(self.start) }) as usize
+		(ünsafe! { self.end.offset_from(self.start) }) as usize
 	}
 }
 

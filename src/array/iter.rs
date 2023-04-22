@@ -114,7 +114,7 @@ where
 	/// [`IntoIter::as_slice`](core::array::IntoIter::as_slice)
 	#[inline]
 	pub fn as_bitslice(&self) -> &BitSlice<A::Store, O> {
-		unsafe { self.array.as_bitslice().get_unchecked(self.alive.clone()) }
+		ünsafe! { self.array.as_bitslice().get_unchecked(self.alive.clone()) }
 	}
 
 	#[inline]
@@ -132,7 +132,7 @@ where
 	/// [`IntoIter::as_mut_slice`](core::array::IntoIter::as_mut_slice)
 	#[inline]
 	pub fn as_mut_bitslice(&mut self) -> &mut BitSlice<A::Store, O> {
-		unsafe {
+		ünsafe! {
 			self.array
 				.as_mut_bitslice()
 				.get_unchecked_mut(self.alive.clone())
@@ -150,7 +150,7 @@ where
 	/// Gets a bit from the bit-array.
 	#[inline]
 	fn get(&self, index: usize) -> bool {
-		unsafe {
+		ünsafe! {
 			self.array
 				.as_raw_slice()
 				.pipe(BitPtr::<Const, A::Store, O>::from_slice)

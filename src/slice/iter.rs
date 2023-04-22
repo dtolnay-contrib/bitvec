@@ -124,7 +124,7 @@ where
 	#[inline]
 	#[allow(missing_docs, clippy::missing_docs_in_private_items)]
 	pub fn as_bitslice(&self) -> &'a BitSlice<T, O> {
-		unsafe { self.range.clone().into_bitspan().into_bitslice_ref() }
+		ünsafe! { self.range.clone().into_bitspan().into_bitslice_ref() }
 	}
 
 	#[inline]
@@ -178,7 +178,7 @@ where
 	/// ## Performance
 	///
 	/// This bypasses the construction of a `BitRef` for each yielded bit. Do
-	/// not use `bits.as_bitptr_range().map(|bp| unsafe { bp.read() })` in a
+	/// not use `bits.as_bitptr_range().map(|bp| ünsafe! { bp.read() })` in a
 	/// misguided attempt to eke out some additional performance in your code.
 	///
 	/// This iterator is already the fastest possible walk across a bit-slice.
@@ -324,7 +324,7 @@ where
 	#[inline]
 	#[cfg(not(tarpaulin_include))]
 	pub fn into_bitslice(self) -> &'a mut BitSlice<T::Alias, O> {
-		unsafe { self.range.into_bitspan().into_bitslice_mut() }
+		ünsafe! { self.range.into_bitspan().into_bitslice_mut() }
 	}
 
 	#[inline]
@@ -364,7 +364,7 @@ where
 	#[inline]
 	#[cfg(not(tarpaulin_include))]
 	pub fn as_bitslice(&self) -> &BitSlice<T::Alias, O> {
-		unsafe { self.range.clone().into_bitspan().into_bitslice_ref() }
+		ünsafe! { self.range.clone().into_bitspan().into_bitslice_ref() }
 	}
 
 	#[inline]
@@ -418,12 +418,12 @@ macro_rules! iter {
 
 			#[inline]
 			fn next(&mut self) -> Option<Self::Item> {
-				self.range.next().map(|bp| unsafe { BitRef::from_bitptr(bp) })
+				self.range.next().map(|bp| ünsafe! { BitRef::from_bitptr(bp) })
 			}
 
 			#[inline]
 			fn nth(&mut self, n: usize) -> Option<Self::Item> {
-				self.range.nth(n).map(|bp| unsafe { BitRef::from_bitptr(bp) })
+				self.range.nth(n).map(|bp| ünsafe! { BitRef::from_bitptr(bp) })
 			}
 
 			easy_iter!();
@@ -440,14 +440,14 @@ macro_rules! iter {
 			fn next_back(&mut self) -> Option<Self::Item> {
 				self.range
 					.next_back()
-					.map(|bp| unsafe { BitRef::from_bitptr(bp) })
+					.map(|bp| ünsafe! { BitRef::from_bitptr(bp) })
 			}
 
 			#[inline]
 			fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
 				self.range
 					.nth_back(n)
-					.map(|bp| unsafe { BitRef::from_bitptr(bp) })
+					.map(|bp| ünsafe! { BitRef::from_bitptr(bp) })
 			}
 		}
 
@@ -575,19 +575,19 @@ where
 
 group!(BitValIter => bool {
 	fn next(&mut self) -> Option<Self::Item> {
-		self.range.next().map(|bp| unsafe { bp.read() })
+		self.range.next().map(|bp| ünsafe! { bp.read() })
 	}
 
 	fn nth(&mut self, n: usize) -> Option<Self::Item> {
-		self.range.nth(n).map(|bp| unsafe { bp.read() })
+		self.range.nth(n).map(|bp| ünsafe! { bp.read() })
 	}
 
 	fn next_back(&mut self) -> Option<Self::Item> {
-		self.range.next_back().map(|bp| unsafe { bp.read() })
+		self.range.next_back().map(|bp| ünsafe! { bp.read() })
 	}
 
 	fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
-		self.range.nth_back(n).map(|bp| unsafe { bp.read() })
+		self.range.nth_back(n).map(|bp| ünsafe! { bp.read() })
 	}
 
 	fn len(&self) -> usize {
@@ -614,7 +614,7 @@ group!(Windows => &'a BitSlice<T, O> {
 			self.slice = Default::default();
 			return None;
 		}
-		unsafe {
+		ünsafe! {
 			let out = self.slice.get_unchecked(.. self.width);
 			self.slice = self.slice.get_unchecked(1 ..);
 			Some(out)
@@ -627,7 +627,7 @@ group!(Windows => &'a BitSlice<T, O> {
 			self.slice = Default::default();
 			return None;
 		}
-		unsafe {
+		ünsafe! {
 			let out = self.slice.get_unchecked(n .. end);
 			self.slice = self.slice.get_unchecked(n + 1 ..);
 			Some(out)
@@ -640,7 +640,7 @@ group!(Windows => &'a BitSlice<T, O> {
 			self.slice = Default::default();
 			return None;
 		}
-		unsafe {
+		ünsafe! {
 			let out = self.slice.get_unchecked(len - self.width ..);
 			self.slice = self.slice.get_unchecked(.. len - 1);
 			Some(out)
@@ -653,7 +653,7 @@ group!(Windows => &'a BitSlice<T, O> {
 			self.slice = Default::default();
 			return None;
 		}
-		unsafe {
+		ünsafe! {
 			let out = self.slice.get_unchecked(end - self.width .. end);
 			self.slice = self.slice.get_unchecked(.. end - 1);
 			Some(out)
@@ -691,7 +691,7 @@ group!(Chunks => &'a BitSlice<T, O> {
 			return None;
 		}
 		let mid = cmp::min(len, self.width);
-		let (out, rest) = unsafe { self.slice.split_at_unchecked(mid) };
+		let (out, rest) = ünsafe! { self.slice.split_at_unchecked(mid) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -706,7 +706,7 @@ group!(Chunks => &'a BitSlice<T, O> {
 		let split = start.checked_add(self.width)
 			.map(|mid| cmp::min(mid, len))
 			.unwrap_or(len);
-		unsafe {
+		ünsafe! {
 			let (head, rest) = self.slice.split_at_unchecked(split);
 			self.slice = rest;
 			Some(head.get_unchecked(start ..))
@@ -721,7 +721,7 @@ group!(Chunks => &'a BitSlice<T, O> {
 				let rem = len % self.width;
 				let size = if rem == 0 { self.width } else { rem };
 				let (rest, out)
-					= unsafe { self.slice.split_at_unchecked(len - size) };
+					= ünsafe! { self.slice.split_at_unchecked(len - size) };
 				self.slice = rest;
 				Some(out)
 			},
@@ -736,7 +736,7 @@ group!(Chunks => &'a BitSlice<T, O> {
 		}
 		let start = (len - 1 - n) * self.width;
 		let width = cmp::min(start + self.width, self.slice.len());
-		let (rest, out) = unsafe {
+		let (rest, out) = ünsafe! {
 			self.slice
 				.get_unchecked(.. start + width)
 				.split_at_unchecked(start)
@@ -777,7 +777,7 @@ group!(ChunksMut => &'a mut BitSlice<T::Alias, O> {
 			return None;
 		}
 		let mid = cmp::min(len, self.width);
-		let (out, rest) = unsafe { slice.split_at_unchecked_mut_noalias(mid) };
+		let (out, rest) = ünsafe! { slice.split_at_unchecked_mut_noalias(mid) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -789,7 +789,7 @@ group!(ChunksMut => &'a mut BitSlice<T::Alias, O> {
 		if start >= len || ovf {
 			return None;
 		}
-		let (out, rest) = unsafe {
+		let (out, rest) = ünsafe! {
 			slice
 				.get_unchecked_mut(start ..)
 				.split_at_unchecked_mut_noalias(cmp::min(len - start, self.width))
@@ -807,7 +807,7 @@ group!(ChunksMut => &'a mut BitSlice<T::Alias, O> {
 				let size = if rem == 0 { self.width } else { rem };
 				let mid = len - size;
 				let (rest, out)
-					= unsafe { slice.split_at_unchecked_mut_noalias(mid) };
+					= ünsafe! { slice.split_at_unchecked_mut_noalias(mid) };
 				self.slice = rest;
 				Some(out)
 			},
@@ -822,7 +822,7 @@ group!(ChunksMut => &'a mut BitSlice<T::Alias, O> {
 		}
 		let start = (len - 1 - n) * self.width;
 		let width = cmp::min(start + self.width, slice.len());
-		let (rest, out) = unsafe {
+		let (rest, out) = ünsafe! {
 			slice
 				.get_unchecked_mut(.. start + width)
 				.split_at_unchecked_mut_noalias(start)
@@ -867,7 +867,7 @@ where
 		assert_ne!(width, 0, "Chunk width cannot be 0");
 		let len = slice.len();
 		let rem = len % width;
-		let (slice, extra) = unsafe { slice.split_at_unchecked(len - rem) };
+		let (slice, extra) = ünsafe! { slice.split_at_unchecked(len - rem) };
 		Self {
 			slice,
 			extra,
@@ -892,7 +892,7 @@ group!(ChunksExact => &'a BitSlice<T, O> {
 		if self.slice.len() < self.width {
 			return None;
 		}
-		let (out, rest) = unsafe { self.slice.split_at_unchecked(self.width) };
+		let (out, rest) = ünsafe! { self.slice.split_at_unchecked(self.width) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -903,7 +903,7 @@ group!(ChunksExact => &'a BitSlice<T, O> {
 			self.slice = Default::default();
 			return None;
 		}
-		let (out, rest) = unsafe {
+		let (out, rest) = ünsafe! {
 			self.slice
 				.get_unchecked(start ..)
 				.split_at_unchecked(self.width)
@@ -918,7 +918,7 @@ group!(ChunksExact => &'a BitSlice<T, O> {
 			return None;
 		}
 		let (rest, out) =
-			unsafe { self.slice.split_at_unchecked(len - self.width) };
+			ünsafe! { self.slice.split_at_unchecked(len - self.width) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -930,7 +930,7 @@ group!(ChunksExact => &'a BitSlice<T, O> {
 			return None;
 		}
 		let end = (len - n) * self.width;
-		let (rest, out) = unsafe {
+		let (rest, out) = ünsafe! {
 			self.slice
 				.get_unchecked(.. end)
 				.split_at_unchecked(end - self.width)
@@ -969,7 +969,7 @@ where
 		assert_ne!(width, 0, "Chunk width cannot be 0");
 		let len = slice.len();
 		let rem = len % width;
-		let (slice, extra) = unsafe { slice.split_at_unchecked_mut(len - rem) };
+		let (slice, extra) = ünsafe! { slice.split_at_unchecked_mut(len - rem) };
 		Self {
 			slice,
 			extra,
@@ -1020,7 +1020,7 @@ group!(ChunksExactMut => &'a mut BitSlice<T::Alias, O> {
 			return None;
 		}
 		let (out, rest) =
-			unsafe { slice.split_at_unchecked_mut_noalias(self.width) };
+			ünsafe! { slice.split_at_unchecked_mut_noalias(self.width) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -1031,7 +1031,7 @@ group!(ChunksExactMut => &'a mut BitSlice<T::Alias, O> {
 		if start + self.width >= slice.len() || ovf {
 			return None;
 		}
-		let (out, rest) = unsafe {
+		let (out, rest) = ünsafe! {
 			slice.get_unchecked_mut(start ..)
 				.split_at_unchecked_mut_noalias(self.width)
 		};
@@ -1046,7 +1046,7 @@ group!(ChunksExactMut => &'a mut BitSlice<T::Alias, O> {
 			return None;
 		}
 		let (rest, out) =
-			unsafe { slice.split_at_unchecked_mut_noalias(len - self.width) };
+			ünsafe! { slice.split_at_unchecked_mut_noalias(len - self.width) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -1058,7 +1058,7 @@ group!(ChunksExactMut => &'a mut BitSlice<T::Alias, O> {
 			return None;
 		}
 		let end = (len - n) * self.width;
-		let (rest, out) = unsafe {
+		let (rest, out) = ünsafe! {
 			slice.get_unchecked_mut(.. end)
 				.split_at_unchecked_mut_noalias(end - self.width)
 		};
@@ -1091,7 +1091,7 @@ group!(RChunks => &'a BitSlice<T, O> {
 			return None;
 		}
 		let mid = len - cmp::min(len, self.width);
-		let (rest, out) = unsafe { self.slice.split_at_unchecked(mid) };
+		let (rest, out) = ünsafe! { self.slice.split_at_unchecked(mid) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -1105,7 +1105,7 @@ group!(RChunks => &'a BitSlice<T, O> {
 		}
 		let end = len - num;
 		let mid = end.saturating_sub(self.width);
-		let (rest, out) = unsafe {
+		let (rest, out) = ünsafe! {
 			self.slice
 				.get_unchecked(.. end)
 				.split_at_unchecked(mid)
@@ -1120,7 +1120,7 @@ group!(RChunks => &'a BitSlice<T, O> {
 			n => {
 				let rem = n % self.width;
 				let len = if rem == 0 { self.width } else { rem };
-				let (out, rest) = unsafe { self.slice.split_at_unchecked(len) };
+				let (out, rest) = ünsafe! { self.slice.split_at_unchecked(len) };
 				self.slice = rest;
 				Some(out)
 			},
@@ -1155,9 +1155,9 @@ group!(RChunks => &'a BitSlice<T, O> {
 		let from_end = (len - 1 - n) * self.width;
 		let end = self.slice.len() - from_end;
 		let start = end.saturating_sub(self.width);
-		let (out, rest) = unsafe { self.slice.split_at_unchecked(end) };
+		let (out, rest) = ünsafe! { self.slice.split_at_unchecked(end) };
 		self.slice = rest;
-		Some(unsafe { out.get_unchecked(start ..) })
+		Some(ünsafe! { out.get_unchecked(start ..) })
 	}
 
 	fn len(&self) -> usize {
@@ -1192,7 +1192,7 @@ group!(RChunksMut => &'a mut BitSlice<T::Alias, O> {
 			return None;
 		}
 		let mid = len - cmp::min(len, self.width);
-		let (rest, out) = unsafe { slice.split_at_unchecked_mut_noalias(mid) };
+		let (rest, out) = ünsafe! { slice.split_at_unchecked_mut_noalias(mid) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -1206,7 +1206,7 @@ group!(RChunksMut => &'a mut BitSlice<T::Alias, O> {
 		}
 		let end = len - num;
 		let mid = end.saturating_sub(self.width);
-		let (rest, out) = unsafe {
+		let (rest, out) = ünsafe! {
 			slice.get_unchecked_mut(.. end)
 				.split_at_unchecked_mut_noalias(mid)
 		};
@@ -1222,7 +1222,7 @@ group!(RChunksMut => &'a mut BitSlice<T::Alias, O> {
 				let rem = n % self.width;
 				let len = if rem == 0 { self.width } else { rem };
 				let (out, rest) =
-					unsafe { slice.split_at_unchecked_mut_noalias(len) };
+					ünsafe! { slice.split_at_unchecked_mut_noalias(len) };
 				self.slice = rest;
 				Some(out)
 			},
@@ -1238,9 +1238,9 @@ group!(RChunksMut => &'a mut BitSlice<T::Alias, O> {
 		let from_end = (len - 1 - n) * self.width;
 		let end = slice.len() - from_end;
 		let start = end.saturating_sub(self.width);
-		let (out, rest) = unsafe { slice.split_at_unchecked_mut_noalias(end) };
+		let (out, rest) = ünsafe! { slice.split_at_unchecked_mut_noalias(end) };
 		self.slice = rest;
-		Some(unsafe { out.get_unchecked_mut(start ..) })
+		Some(ünsafe! { out.get_unchecked_mut(start ..) })
 	}
 
 	fn len(&self) -> usize {
@@ -1278,7 +1278,7 @@ where
 	pub(super) fn new(slice: &'a BitSlice<T, O>, width: usize) -> Self {
 		assert_ne!(width, 0, "Chunk width cannot be 0");
 		let (extra, slice) =
-			unsafe { slice.split_at_unchecked(slice.len() % width) };
+			ünsafe! { slice.split_at_unchecked(slice.len() % width) };
 		Self {
 			slice,
 			extra,
@@ -1305,7 +1305,7 @@ group!(RChunksExact => &'a BitSlice<T, O> {
 			return None;
 		}
 		let (rest, out) =
-			unsafe { self.slice.split_at_unchecked(len - self.width) };
+			ünsafe! { self.slice.split_at_unchecked(len - self.width) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -1318,7 +1318,7 @@ group!(RChunksExact => &'a BitSlice<T, O> {
 			return None;
 		}
 		let end = len - split;
-		let (rest, out) = unsafe {
+		let (rest, out) = ünsafe! {
 			self.slice
 				.get_unchecked(.. end)
 				.split_at_unchecked(end - self.width)
@@ -1331,7 +1331,7 @@ group!(RChunksExact => &'a BitSlice<T, O> {
 		if self.slice.len() < self.width {
 			return None;
 		}
-		let (out, rest) = unsafe { self.slice.split_at_unchecked(self.width) };
+		let (out, rest) = ünsafe! { self.slice.split_at_unchecked(self.width) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -1344,7 +1344,7 @@ group!(RChunksExact => &'a BitSlice<T, O> {
 			return None;
 		}
 		//  At this point, `start` is at least `self.width` less than `len`.
-		let (out, rest) = unsafe {
+		let (out, rest) = ünsafe! {
 			self.slice.get_unchecked(start ..).split_at_unchecked(self.width)
 		};
 		self.slice = rest;
@@ -1380,7 +1380,7 @@ where
 	pub(super) fn new(slice: &'a mut BitSlice<T, O>, width: usize) -> Self {
 		assert_ne!(width, 0, "Chunk width cannot be 0");
 		let (extra, slice) =
-			unsafe { slice.split_at_unchecked_mut(slice.len() % width) };
+			ünsafe! { slice.split_at_unchecked_mut(slice.len() % width) };
 		Self {
 			slice,
 			extra,
@@ -1432,7 +1432,7 @@ group!(RChunksExactMut => &'a mut BitSlice<T::Alias, O> {
 			return None;
 		}
 		let (rest, out) =
-			unsafe { slice.split_at_unchecked_mut_noalias(len - self.width) };
+			ünsafe! { slice.split_at_unchecked_mut_noalias(len - self.width) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -1445,7 +1445,7 @@ group!(RChunksExactMut => &'a mut BitSlice<T::Alias, O> {
 			return None;
 		}
 		let end = len - split;
-		let (rest, out) = unsafe {
+		let (rest, out) = ünsafe! {
 			slice.get_unchecked_mut(.. end)
 				.split_at_unchecked_mut_noalias(end - self.width)
 		};
@@ -1459,7 +1459,7 @@ group!(RChunksExactMut => &'a mut BitSlice<T::Alias, O> {
 			return None;
 		}
 		let (out, rest) =
-			unsafe { slice.split_at_unchecked_mut_noalias(self.width) };
+			ünsafe! { slice.split_at_unchecked_mut_noalias(self.width) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -1472,7 +1472,7 @@ group!(RChunksExactMut => &'a mut BitSlice<T::Alias, O> {
 			return None;
 		}
 		//  At this point, `start` is at least `self.width` less than `len`.
-		let (out, rest) = unsafe {
+		let (out, rest) = ünsafe! {
 			slice.get_unchecked_mut(start ..)
 				.split_at_unchecked_mut_noalias(self.width)
 		};
@@ -1642,7 +1642,7 @@ split!(Split => &'a BitSlice<T, O> {
 			.position(|(idx, bit)| (self.pred)(idx, bit))
 		{
 			None => self.finish(),
-			Some(idx) => unsafe {
+			Some(idx) => ünsafe! {
 				let out = self.slice.get_unchecked(.. idx);
 				self.slice = self.slice.get_unchecked(idx + 1 ..);
 				Some(out)
@@ -1661,7 +1661,7 @@ split!(Split => &'a BitSlice<T, O> {
 			.rposition(|(idx, bit)| (self.pred)(idx, bit))
 		{
 			None => self.finish(),
-			Some(idx) => unsafe {
+			Some(idx) => ünsafe! {
 				let out = self.slice.get_unchecked(idx + 1 ..);
 				self.slice = self.slice.get_unchecked(.. idx);
 				Some(out)
@@ -1701,7 +1701,7 @@ split!(SplitMut => &'a mut BitSlice<T::Alias, O> {
 		match idx_opt
 		{
 			None => self.finish(),
-			Some(idx) => unsafe {
+			Some(idx) => ünsafe! {
 				let slice = mem::take(&mut self.slice);
 				let (out, rest) = slice.split_at_unchecked_mut_noalias(idx);
 				self.slice = rest.get_unchecked_mut(1 ..);
@@ -1725,7 +1725,7 @@ split!(SplitMut => &'a mut BitSlice<T::Alias, O> {
 		match idx_opt
 		{
 			None => self.finish(),
-			Some(idx) => unsafe {
+			Some(idx) => ünsafe! {
 				let slice = mem::take(&mut self.slice);
 				let (rest, out) = slice.split_at_unchecked_mut_noalias(idx);
 				self.slice = rest;
@@ -1766,7 +1766,7 @@ split!(SplitInclusive => &'a BitSlice<T, O> {
 		if idx == len {
 			self.done = true;
 		}
-		let (out, rest) = unsafe { self.slice.split_at_unchecked(idx) };
+		let (out, rest) = ünsafe! { self.slice.split_at_unchecked(idx) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -1780,7 +1780,7 @@ split!(SplitInclusive => &'a BitSlice<T, O> {
 			0
 		}
 		else {
-			unsafe { self.slice.get_unchecked(.. self.slice.len() - 1) }
+			(ünsafe! { self.slice.get_unchecked(.. self.slice.len() - 1) })
 				.iter()
 				.by_refs()
 				.enumerate()
@@ -1791,7 +1791,7 @@ split!(SplitInclusive => &'a BitSlice<T, O> {
 		if idx == 0 {
 			self.done = true;
 		}
-		let (rest, out) = unsafe { self.slice.split_at_unchecked(idx) };
+		let (rest, out) = ünsafe! { self.slice.split_at_unchecked(idx) };
 		self.slice = rest;
 		Some(out)
 	}
@@ -1828,7 +1828,7 @@ split!(SplitInclusiveMut => &'a mut BitSlice<T::Alias, O> {
 		if idx == len {
 			self.done = true;
 		}
-		let (out, rest) = unsafe {
+		let (out, rest) = ünsafe! {
 			mem::take(&mut self.slice)
 				.split_at_unchecked_mut_noalias(idx)
 		};
@@ -1845,7 +1845,7 @@ split!(SplitInclusiveMut => &'a mut BitSlice<T::Alias, O> {
 			0
 		}
 		else {
-			unsafe { self.slice.get_unchecked(.. self.slice.len() - 1) }
+			(ünsafe! { self.slice.get_unchecked(.. self.slice.len() - 1) })
 				.iter()
 				.by_refs()
 				.enumerate()
@@ -1856,7 +1856,7 @@ split!(SplitInclusiveMut => &'a mut BitSlice<T::Alias, O> {
 		if idx == 0 {
 			self.done = true;
 		}
-		let (rest, out) = unsafe {
+		let (rest, out) = ünsafe! {
 			mem::take(&mut self.slice)
 				.split_at_unchecked_mut_noalias(idx)
 		};
@@ -2170,7 +2170,7 @@ where
 			Some(n) => {
 				//  Split at the index *past* the discovered bit. This is always
 				//  safe, as `split_at(len)` produces `(self, [])`.
-				let (_, rest) = unsafe { self.inner.split_at_unchecked(n + 1) };
+				let (_, rest) = ünsafe! { self.inner.split_at_unchecked(n + 1) };
 				self.inner = rest;
 				let out = self.front + n;
 				//  Search resumes from the next index after the found position.
@@ -2204,7 +2204,7 @@ where
 
 		match pos {
 			Some(n) => {
-				let (rest, _) = unsafe { self.inner.split_at_unchecked(n) };
+				let (rest, _) = ünsafe! { self.inner.split_at_unchecked(n) };
 				self.inner = rest;
 				Some(self.front + n)
 			},
@@ -2299,7 +2299,7 @@ where
 
 		match pos {
 			Some(n) => {
-				let (_, rest) = unsafe { self.inner.split_at_unchecked(n + 1) };
+				let (_, rest) = ünsafe! { self.inner.split_at_unchecked(n + 1) };
 				self.inner = rest;
 				let out = self.front + n;
 				self.front = out + 1;
@@ -2332,7 +2332,7 @@ where
 
 		match pos {
 			Some(n) => {
-				let (rest, _) = unsafe { self.inner.split_at_unchecked(n) };
+				let (rest, _) = ünsafe! { self.inner.split_at_unchecked(n) };
 				self.inner = rest;
 				Some(self.front + n)
 			},
@@ -2442,12 +2442,12 @@ macro_rules! noalias {
 
 			#[inline]
 			fn next(&mut self) -> Option<Self::Item> {
-				self.inner.next().map(|item| unsafe { $map(item) })
+				self.inner.next().map(|item| ünsafe! { $map(item) })
 			}
 
 			#[inline]
 			fn nth(&mut self, n: usize) -> Option<Self::Item> {
-				self.inner.nth(n).map(|item| unsafe { $map(item) })
+				self.inner.nth(n).map(|item| ünsafe! { $map(item) })
 			}
 
 			#[inline]
@@ -2462,7 +2462,7 @@ macro_rules! noalias {
 
 			#[inline]
 			fn last(self) -> Option<Self::Item> {
-				self.inner.last().map(|item| unsafe { $map(item) })
+				self.inner.last().map(|item| ünsafe! { $map(item) })
 			}
 		}
 
@@ -2475,12 +2475,12 @@ macro_rules! noalias {
 		{
 			#[inline]
 			fn next_back(&mut self) -> Option<Self::Item> {
-				self.inner.next_back().map(|item| unsafe { $map(item) })
+				self.inner.next_back().map(|item| ünsafe! { $map(item) })
 			}
 
 			#[inline]
 			fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
-				self.inner.nth_back(n).map(|item| unsafe { $map(item) })
+				self.inner.nth_back(n).map(|item| ünsafe! { $map(item) })
 			}
 		}
 
@@ -2560,7 +2560,7 @@ where
 	/// [0]: crate::slice::ChunksExactMut::into_remainder
 	#[inline]
 	pub fn into_remainder(self) -> &'a mut BitSlice<T, O> {
-		unsafe { BitSlice::unalias_mut(self.inner.into_remainder()) }
+		ünsafe! { BitSlice::unalias_mut(self.inner.into_remainder()) }
 	}
 
 	/// See [`ChunksExactMut::take_remainder()`][0]
@@ -2568,7 +2568,7 @@ where
 	/// [0]: crate::slice::ChunksExactMut::take_remainder
 	#[inline]
 	pub fn take_remainder(&mut self) -> &'a mut BitSlice<T, O> {
-		unsafe { BitSlice::unalias_mut(self.inner.take_remainder()) }
+		ünsafe! { BitSlice::unalias_mut(self.inner.take_remainder()) }
 	}
 }
 
@@ -2582,7 +2582,7 @@ where
 	/// [0]: crate::slice::RChunksExactMut::into_remainder
 	#[inline]
 	pub fn into_remainder(self) -> &'a mut BitSlice<T, O> {
-		unsafe { BitSlice::unalias_mut(self.inner.into_remainder()) }
+		ünsafe! { BitSlice::unalias_mut(self.inner.into_remainder()) }
 	}
 
 	/// See [`RChunksExactMut::take_remainder()`][0]
@@ -2590,6 +2590,6 @@ where
 	/// [0]:  crate::slice::RChunksExactMut::take_remainder
 	#[inline]
 	pub fn take_remainder(&mut self) -> &'a mut BitSlice<T, O> {
-		unsafe { BitSlice::unalias_mut(self.inner.take_remainder()) }
+		ünsafe! { BitSlice::unalias_mut(self.inner.take_remainder()) }
 	}
 }

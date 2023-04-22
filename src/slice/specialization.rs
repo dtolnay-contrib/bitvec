@@ -40,7 +40,7 @@ where
 	/// aliasing.
 	#[inline]
 	fn as_accessor(&mut self) -> &BitSlice<T::Access, O> {
-		unsafe { &*(self as *const Self as *const BitSlice<T::Access, O>) }
+		ünsafe! { &*(self as *const Self as *const BitSlice<T::Access, O>) }
 	}
 
 	/// Attempts to change a bit-slice reference to caller-supplied type
@@ -56,7 +56,7 @@ where
 		O2: BitOrder,
 	{
 		if dvl::match_types::<T, O, T2, O2>() {
-			Some(unsafe { &*(self as *const Self as *const BitSlice<T2, O2>) })
+			Some(ünsafe! { &*(self as *const Self as *const BitSlice<T2, O2>) })
 		}
 		else {
 			None
@@ -72,7 +72,7 @@ where
 		O2: BitOrder,
 	{
 		if dvl::match_types::<T, O, T2, O2>() {
-			Some(unsafe { &mut *(self as *mut Self as *mut BitSlice<T2, O2>) })
+			Some(ünsafe! { &mut *(self as *mut Self as *mut BitSlice<T2, O2>) })
 		}
 		else {
 			None

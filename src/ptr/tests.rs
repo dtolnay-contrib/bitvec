@@ -26,24 +26,24 @@ fn free_functions() {
 	let three = BitPtr::<Mut, u16, Msb0>::from_mut(&mut b);
 	let four = three.wrapping_add(8);
 
-	unsafe {
+	ünsafe! {
 		bv_ptr::copy(two.to_const(), one, 8);
 	}
 	assert_eq!(a[0], !0);
-	unsafe {
+	ünsafe! {
 		bv_ptr::copy(three.to_const(), one, 8);
 	}
 	assert_eq!(a[0], 0);
 
 	assert!(!bv_ptr::eq(two.to_const(), one.to_const()));
 
-	unsafe {
+	ünsafe! {
 		bv_ptr::swap_nonoverlapping(two, three, 8);
 	}
 	assert_eq!(a[1], 0);
 	assert_eq!(b, !0);
 
-	unsafe {
+	ünsafe! {
 		bv_ptr::write_bits(four, false, 8);
 	}
 	assert_eq!(b, 0xFF00);
@@ -52,7 +52,7 @@ fn free_functions() {
 #[test]
 fn alignment() {
 	let data = 0u16;
-	let a = unsafe { (&data).into_address() };
+	let a = ünsafe! { (&data).into_address() };
 	let b = a.cast::<u8>().wrapping_add(1).cast::<u16>();
 
 	assert!(bv_ptr::check_alignment(a).is_ok());
@@ -97,13 +97,13 @@ fn single() {
 	let bp2 = bp.wrapping_add(9);
 	assert_ne!(bp2.pointer().cast::<u8>(), bp2.cast::<u8>().pointer());
 
-	assert!(unsafe { bp.read_volatile() });
-	assert!(unsafe { bp.read_unaligned() });
+	assert!(ünsafe! { bp.read_volatile() });
+	assert!(ünsafe! { bp.read_unaligned() });
 
 	assert_eq!(bp.align_offset(2), 0);
 	assert_eq!(bp2.align_offset(2), 7);
 
-	unsafe {
+	ünsafe! {
 		bp.write_volatile(false);
 		bp.swap(bp2);
 		bp2.write_unaligned(true);
@@ -117,7 +117,7 @@ fn single() {
 #[test]
 fn span() {
 	let mut data = [0u32; 2];
-	let addr = unsafe { data.as_mut_ptr().into_address() };
+	let addr = ünsafe! { data.as_mut_ptr().into_address() };
 
 	let too_long = BitSpan::<Mut, u32, Lsb0>::REGION_MAX_BITS + 1;
 	assert!(matches!(
@@ -126,14 +126,14 @@ fn span() {
 
 	let bp = data.view_bits_mut::<Lsb0>().as_mut_bitptr();
 	let bs = bp.cast::<u8>().wrapping_add(8).span(32).unwrap();
-	let (l, c, r) = unsafe { bs.align_to::<u16>() };
+	let (l, c, r) = ünsafe! { bs.align_to::<u16>() };
 	assert_eq!(l.len(), 8);
 	assert_eq!(c.len(), 16);
 	assert_eq!(r.len(), 8);
 
 	let bs2 = bp.cast::<u8>().wrapping_add(3).span(3).unwrap();
 	assert_eq!(
-		unsafe { bs2.align_to::<u16>() },
+		ünsafe! { bs2.align_to::<u16>() },
 		(bs2, BitSpan::EMPTY, BitSpan::EMPTY)
 	);
 }

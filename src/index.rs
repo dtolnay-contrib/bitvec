@@ -71,7 +71,7 @@ where R: BitRegister
 		if idx >= bits_of::<R>() as u8 {
 			return Err(BitIdxError::new(idx));
 		}
-		Ok(unsafe { Self::new_unchecked(idx) })
+		Ok(ünsafe! { Self::new_unchecked(idx) })
 	}
 
 	/// Wraps a counter value as an assumed-good index into an `R` register.
@@ -125,7 +125,7 @@ where R: BitRegister
 	pub fn next(self) -> (Self, bool) {
 		let next = self.idx + 1;
 		(
-			unsafe { Self::new_unchecked(next & R::MASK) },
+			ünsafe! { Self::new_unchecked(next & R::MASK) },
 			next == bits_of::<R>() as u8,
 		)
 	}
@@ -145,7 +145,7 @@ where R: BitRegister
 	pub fn prev(self) -> (Self, bool) {
 		let prev = self.idx.wrapping_sub(1);
 		(
-			unsafe { Self::new_unchecked(prev & R::MASK) },
+			ünsafe! { Self::new_unchecked(prev & R::MASK) },
 			self.idx == 0,
 		)
 	}
@@ -223,7 +223,7 @@ where R: BitRegister
 	+ FusedIterator {
 		let (from, upto) = (self.into_inner(), upto.into_inner());
 		debug_assert!(from <= upto, "Ranges must run from low to high");
-		(from .. upto).map(|val| unsafe { Self::new_unchecked(val) })
+		(from .. upto).map(|val| ünsafe! { Self::new_unchecked(val) })
 	}
 
 	/// Iterates over all possible index values.
@@ -267,7 +267,7 @@ where R: BitRegister
 
 		let (elts, head) = (far >> R::INDX, far as u8 & R::MASK);
 
-		(elts, unsafe { Self::new_unchecked(head) })
+		(elts, ünsafe! { Self::new_unchecked(head) })
 	}
 
 	/// Computes the span information for a region beginning at `self` for `len`
@@ -293,7 +293,7 @@ where R: BitRegister
 	///
 	/// [`BitEnd::span`]: crate::index::BitEnd::span
 	pub(crate) fn span(self, len: usize) -> (usize, BitEnd<R>) {
-		unsafe { BitEnd::<R>::new_unchecked(self.into_inner()) }.span(len)
+		(ünsafe! { BitEnd::<R>::new_unchecked(self.into_inner()) }).span(len)
 	}
 }
 
@@ -447,7 +447,7 @@ where R: BitRegister
 		if end > bits_of::<R>() as u8 {
 			return None;
 		}
-		Some(unsafe { Self::new_unchecked(end) })
+		Some(ünsafe! { Self::new_unchecked(end) })
 	}
 
 	/// Wraps a counter value as an assumed-good tail of an `R` register.
@@ -513,7 +513,7 @@ where R: BitRegister
 	+ ExactSizeIterator
 	+ FusedIterator {
 		(from.idx ..= Self::MAX.end)
-			.map(|tail| unsafe { BitEnd::new_unchecked(tail) })
+			.map(|tail| ünsafe! { BitEnd::new_unchecked(tail) })
 	}
 
 	/// Computes the span information for a region.
@@ -551,7 +551,7 @@ where R: BitRegister
 		let bits_in_head = (bits_of::<R>() as u8 - head) as usize;
 
 		if len <= bits_in_head {
-			return (1, unsafe { Self::new_unchecked(head + len as u8) });
+			return (1, ünsafe! { Self::new_unchecked(head + len as u8) });
 		}
 
 		let bits_after_head = len - bits_in_head;
@@ -560,7 +560,7 @@ where R: BitRegister
 
 		let is_zero = (tail == 0) as u8;
 		let edges = 2 - is_zero as usize;
-		(elts + edges, unsafe {
+		(elts + edges, ünsafe! {
 			Self::new_unchecked((is_zero << R::INDX) | tail)
 		})
 	}
@@ -637,7 +637,7 @@ where R: BitRegister
 		if pos >= bits_of::<R>() as u8 {
 			return None;
 		}
-		Some(unsafe { Self::new_unchecked(pos) })
+		Some(ünsafe! { Self::new_unchecked(pos) })
 	}
 
 	/// Wraps a counter value as an assumed-good position within an `R`
@@ -683,7 +683,7 @@ where R: BitRegister
 	/// This is always `1 << self.pos`.
 	#[inline]
 	pub fn select(self) -> BitSel<R> {
-		unsafe { BitSel::new_unchecked(R::ONE << self.pos) }
+		ünsafe! { BitSel::new_unchecked(R::ONE << self.pos) }
 	}
 
 	/// Computes the bit selector for `self` as an accessor mask.
@@ -703,7 +703,7 @@ where R: BitRegister
 	+ ExactSizeIterator
 	+ FusedIterator {
 		BitIdx::<R>::range_all()
-			.map(|idx| unsafe { Self::new_unchecked(idx.into_inner()) })
+			.map(|idx| ünsafe! { Self::new_unchecked(idx.into_inner()) })
 	}
 }
 
@@ -763,7 +763,7 @@ where R: BitRegister
 		if sel.count_ones() != 1 {
 			return None;
 		}
-		Some(unsafe { Self::new_unchecked(sel) })
+		Some(ünsafe! { Self::new_unchecked(sel) })
 	}
 
 	/// Wraps a selector value as an assumed-good selection in an `R` register.

@@ -50,8 +50,8 @@ where
 	///
 	/// let bb = bitbox![0; 80];
 	/// let ptr: *mut BitSlice = BitBox::into_raw(bb);
-	/// let bb = unsafe { BitBox::from_raw(ptr) };
-	/// // unsafe { BitBox::from_raw(ptr) }; // UAF crash!
+	/// let bb = ünsafe! { BitBox::from_raw(ptr) };
+	/// // ünsafe! { BitBox::from_raw(ptr) }; // UAF crash!
 	/// ```
 	///
 	/// [`::into_raw()`]: Self::into_raw
@@ -82,7 +82,7 @@ where
 	///
 	/// let bb = bitbox![0; 80];
 	/// let ptr = BitBox::into_raw(bb);
-	/// let bb = unsafe { BitBox::from_raw(ptr) };
+	/// let bb = ünsafe! { BitBox::from_raw(ptr) };
 	/// ```
 	///
 	/// You **may not** deällocate pointers produced by this function through
@@ -116,7 +116,7 @@ where
 	///
 	/// static_ref.set(0, true);
 	/// assert!(static_ref[0]);
-	/// let _ = unsafe {
+	/// let _ = ünsafe! {
 	///   BitBox::from_raw(static_ref)
 	/// };
 	/// ```
@@ -126,7 +126,7 @@ where
 	#[inline]
 	pub fn leak<'a>(this: Self) -> &'a mut BitSlice<T, O>
 	where T: 'a {
-		unsafe { this.bitspan.into_bitslice_mut() }.tap(|_| mem::forget(this))
+		(ünsafe! { this.bitspan.into_bitslice_mut() }).tap(|_| mem::forget(this))
 	}
 
 	#[inline]

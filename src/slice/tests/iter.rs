@@ -37,19 +37,19 @@ fn windows() {
 	assert_eq!(windows.len(), 7);
 
 	let next = windows.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next, bits![0, 1, 0, 1]);
 
 	let next_back = windows.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 6);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 6);
 	assert_eq!(next_back, bits![0, 1, 1, 1]);
 
 	let nth = windows.nth(2).unwrap();
-	assert_eq!(unsafe { nth.as_bitptr().offset_from(base) }, 3);
+	assert_eq!(ünsafe! { nth.as_bitptr().offset_from(base) }, 3);
 	assert_eq!(nth, bits![1, 1, 0, 0]);
 
 	let nth_back = windows.nth_back(1).unwrap();
-	assert_eq!(unsafe { nth_back.as_bitptr().offset_from(base) }, 4);
+	assert_eq!(ünsafe! { nth_back.as_bitptr().offset_from(base) }, 4);
 	assert_eq!(nth_back, bits![1, 0, 0, 1]);
 
 	assert_eq!(windows.len(), 0);
@@ -68,19 +68,19 @@ fn chunks() {
 	assert_eq!(chunks.len(), 6);
 
 	let next = chunks.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next, bits![0, 0]);
 
 	let next_back = chunks.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 10);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 10);
 	assert_eq!(next_back, bits![0]);
 
 	let nth = chunks.nth(1).unwrap();
-	assert_eq!(unsafe { nth.as_bitptr().offset_from(base) }, 4);
+	assert_eq!(ünsafe! { nth.as_bitptr().offset_from(base) }, 4);
 	assert_eq!(nth, bits![0, 1]);
 
 	let nth_back = chunks.nth_back(1).unwrap();
-	assert_eq!(unsafe { nth_back.as_bitptr().offset_from(base) }, 6);
+	assert_eq!(ünsafe! { nth_back.as_bitptr().offset_from(base) }, 6);
 	assert_eq!(nth_back, bits![1, 0]);
 
 	assert_eq!(chunks.len(), 0);
@@ -107,19 +107,19 @@ fn chunks_mut() {
 	assert_eq!(chunks.len(), 6);
 
 	let next = chunks.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 0);
 	next.fill(false);
 
 	let next_back = chunks.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 10);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 10);
 	next_back.fill(false);
 
 	let nth = chunks.nth(1).unwrap();
-	assert_eq!(unsafe { nth.as_bitptr().offset_from(base) }, 4);
+	assert_eq!(ünsafe! { nth.as_bitptr().offset_from(base) }, 4);
 	nth.set(0, false);
 
 	let nth_back = chunks.nth_back(1).unwrap();
-	assert_eq!(unsafe { nth_back.as_bitptr().offset_from(base) }, 6);
+	assert_eq!(ünsafe! { nth_back.as_bitptr().offset_from(base) }, 6);
 	nth_back.set(1, false);
 
 	assert_eq!(chunks.len(), 0);
@@ -152,23 +152,23 @@ fn chunks_exact() {
 	assert_eq!(chunks.len(), 6);
 
 	let next = chunks.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next, bits![0, 0, 0]);
 
 	let nth = chunks.nth(1).unwrap();
-	assert_eq!(unsafe { nth.as_bitptr().offset_from(base) }, 6);
+	assert_eq!(ünsafe! { nth.as_bitptr().offset_from(base) }, 6);
 	assert_eq!(nth, bits![0, 0, 1]);
 
 	let next_back = chunks.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 15);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 15);
 	assert_eq!(next_back, bits![0, 1, 0]);
 
 	let nth_back = chunks.nth_back(1).unwrap();
-	assert_eq!(unsafe { nth_back.as_bitptr().offset_from(base) }, 9);
+	assert_eq!(ünsafe! { nth_back.as_bitptr().offset_from(base) }, 9);
 	assert_eq!(nth_back, bits![1, 0, 0]);
 
 	let remainder = chunks.remainder();
-	assert_eq!(unsafe { remainder.as_bitptr().offset_from(base) }, 18);
+	assert_eq!(ünsafe! { remainder.as_bitptr().offset_from(base) }, 18);
 	assert_eq!(remainder, bits![1, 1]);
 
 	assert_eq!(chunks.len(), 0);
@@ -185,19 +185,19 @@ fn chunks_exact_mut() {
 	let mut chunks = bits.chunks_exact_mut(3);
 
 	let next = chunks.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 0);
 	next.fill(true);
 
 	let next_back = chunks.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 15);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 15);
 	next_back.fill(true);
 
 	let nth = chunks.nth(1).unwrap();
-	assert_eq!(unsafe { nth.as_bitptr().offset_from(base) }, 6);
+	assert_eq!(ünsafe! { nth.as_bitptr().offset_from(base) }, 6);
 	nth.set(2, true);
 
 	let nth_back = chunks.nth_back(1).unwrap();
-	assert_eq!(unsafe { nth_back.as_bitptr().offset_from(base) }, 9);
+	assert_eq!(ünsafe! { nth_back.as_bitptr().offset_from(base) }, 9);
 	nth_back.set(0, true);
 
 	assert_eq!(chunks.len(), 0);
@@ -213,7 +213,7 @@ fn chunks_exact_mut() {
 
 	let mut chunks = bits.chunks_exact_mut(3);
 	let remainder = chunks.take_remainder();
-	assert_eq!(unsafe { remainder.as_bitptr().offset_from(base) }, 18);
+	assert_eq!(ünsafe! { remainder.as_bitptr().offset_from(base) }, 18);
 	remainder.fill(true);
 	assert!(chunks.take_remainder().is_empty());
 	assert!(chunks.into_remainder().is_empty());
@@ -228,19 +228,19 @@ fn rchunks() {
 	let mut rchunks = bits.rchunks(2);
 
 	let next = rchunks.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 9);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 9);
 	assert_eq!(next, bits![0, 0]);
 
 	let next_back = rchunks.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next_back, bits![1]);
 
 	let nth = rchunks.nth(1).unwrap();
-	assert_eq!(unsafe { nth.as_bitptr().offset_from(base) }, 5);
+	assert_eq!(ünsafe! { nth.as_bitptr().offset_from(base) }, 5);
 	assert_eq!(nth, bits![0, 1]);
 
 	let nth_back = rchunks.nth_back(1).unwrap();
-	assert_eq!(unsafe { nth_back.as_bitptr().offset_from(base) }, 3);
+	assert_eq!(ünsafe! { nth_back.as_bitptr().offset_from(base) }, 3);
 	assert_eq!(nth_back, bits![1, 0]);
 
 	assert_eq!(rchunks.len(), 0);
@@ -263,19 +263,19 @@ fn rchunks_mut() {
 	assert_eq!(rchunks.len(), 6);
 
 	let next = rchunks.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 9);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 9);
 	next.fill(true);
 
 	let next_back = rchunks.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 0);
 	next_back.fill(true);
 
 	let nth = rchunks.nth(1).unwrap();
-	assert_eq!(unsafe { nth.as_bitptr().offset_from(base) }, 5);
+	assert_eq!(ünsafe! { nth.as_bitptr().offset_from(base) }, 5);
 	nth.set(0, true);
 
 	let nth_back = rchunks.nth_back(1).unwrap();
-	assert_eq!(unsafe { nth_back.as_bitptr().offset_from(base) }, 3);
+	assert_eq!(ünsafe! { nth_back.as_bitptr().offset_from(base) }, 3);
 	nth_back.set(1, true);
 
 	assert_eq!(rchunks.len(), 0);
@@ -304,23 +304,23 @@ fn rchunks_exact() {
 	assert_eq!(rchunks.len(), 6);
 
 	let next = rchunks.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 17);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 17);
 	assert_eq!(next, bits![0, 0, 0]);
 
 	let nth = rchunks.nth(1).unwrap();
-	assert_eq!(unsafe { nth.as_bitptr().offset_from(base) }, 11);
+	assert_eq!(ünsafe! { nth.as_bitptr().offset_from(base) }, 11);
 	assert_eq!(nth, bits![1, 0, 0]);
 
 	let next_back = rchunks.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 2);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 2);
 	assert_eq!(next_back, bits![0, 1, 0]);
 
 	let nth_back = rchunks.nth_back(1).unwrap();
-	assert_eq!(unsafe { nth_back.as_bitptr().offset_from(base) }, 8);
+	assert_eq!(ünsafe! { nth_back.as_bitptr().offset_from(base) }, 8);
 	assert_eq!(nth_back, bits![0, 0, 1]);
 
 	let remainder = rchunks.remainder();
-	assert_eq!(unsafe { remainder.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { remainder.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(remainder, bits![1, 1]);
 
 	assert_eq!(rchunks.len(), 0);
@@ -337,19 +337,19 @@ fn rchunks_exact_mut() {
 	let mut rchunks = bits.rchunks_exact_mut(3);
 
 	let next = rchunks.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 17);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 17);
 	next.fill(true);
 
 	let next_back = rchunks.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 2);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 2);
 	next_back.fill(true);
 
 	let nth = rchunks.nth(1).unwrap();
-	assert_eq!(unsafe { nth.as_bitptr().offset_from(base) }, 11);
+	assert_eq!(ünsafe! { nth.as_bitptr().offset_from(base) }, 11);
 	nth.set(2, true);
 
 	let nth_back = rchunks.nth_back(1).unwrap();
-	assert_eq!(unsafe { nth_back.as_bitptr().offset_from(base) }, 8);
+	assert_eq!(ünsafe! { nth_back.as_bitptr().offset_from(base) }, 8);
 	nth_back.set(0, true);
 
 	assert_eq!(rchunks.len(), 0);
@@ -365,7 +365,7 @@ fn rchunks_exact_mut() {
 
 	let mut chunks = bits.rchunks_exact_mut(3);
 	let remainder = chunks.take_remainder();
-	assert_eq!(unsafe { remainder.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { remainder.as_bitptr().offset_from(base) }, 0);
 	remainder.fill(true);
 	assert!(chunks.take_remainder().is_empty());
 	assert!(chunks.into_remainder().is_empty());
@@ -379,23 +379,23 @@ fn split() {
 	let mut split = bits.split(|_, &bit| bit);
 
 	let next = split.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next, bits![0, 0]);
 
 	let next = split.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 3);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 3);
 	assert!(next.is_empty());
 
 	let next_back = split.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 8);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 8);
 	assert!(next_back.is_empty());
 
 	let next_back = split.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 7);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 7);
 	assert!(next_back.is_empty());
 
 	let next_back = split.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 4);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 4);
 	assert_eq!(next_back, bits![0, 0]);
 
 	assert!(split.next().is_none());
@@ -409,23 +409,23 @@ fn split_mut() {
 	let mut split = bits.split_mut(|_, &bit| bit);
 
 	let next = split.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next, bits![0, 0]);
 
 	let next = split.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 3);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 3);
 	assert!(next.is_empty());
 
 	let next_back = split.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 8);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 8);
 	assert!(next_back.is_empty());
 
 	let next_back = split.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 7);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 7);
 	assert!(next_back.is_empty());
 
 	let next_back = split.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 4);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 4);
 	assert_eq!(next_back, bits![0, 0]);
 
 	assert!(split.next().is_none());
@@ -444,19 +444,19 @@ fn split_inclusive() {
 	let mut split = bits.split_inclusive(|_, &bit| bit);
 
 	let next = split.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next, bits![0, 0, 1]);
 
 	let next = split.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 3);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 3);
 	assert_eq!(next, bits![1]);
 
 	let next_back = split.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 7);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 7);
 	assert_eq!(next_back, bits![1]);
 
 	let next_back = split.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 4);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 4);
 	assert_eq!(next_back, bits![0, 0, 1]);
 
 	assert!(split.next().is_none());
@@ -483,19 +483,19 @@ fn split_inclusive_mut() {
 	let mut split = bits.split_inclusive_mut(|_, &bit| bit);
 
 	let next = split.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next, bits![0, 0, 1]);
 
 	let next = split.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 3);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 3);
 	assert_eq!(next, bits![1]);
 
 	let next_back = split.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 7);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 7);
 	assert_eq!(next_back, bits![1]);
 
 	let next_back = split.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 4);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 4);
 	assert_eq!(next_back, bits![0, 0, 1]);
 
 	assert!(split.next().is_none());
@@ -525,23 +525,23 @@ fn rsplit() {
 	let mut rsplit = bits.rsplit(|_, &bit| bit);
 
 	let next = rsplit.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 8);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 8);
 	assert!(next.is_empty());
 
 	let next = rsplit.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 7);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 7);
 	assert!(next.is_empty());
 
 	let next_back = rsplit.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next_back, bits![0, 0]);
 
 	let next_back = rsplit.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 3);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 3);
 	assert!(next_back.is_empty());
 
 	let next_back = rsplit.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 4);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 4);
 	assert_eq!(next_back, bits![0, 0]);
 
 	assert!(rsplit.next().is_none());
@@ -555,23 +555,23 @@ fn rsplit_mut() {
 	let mut rsplit = bits.rsplit_mut(|_, &bit| bit);
 
 	let next = rsplit.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 8);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 8);
 	assert!(next.is_empty());
 
 	let next = rsplit.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 7);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 7);
 	assert!(next.is_empty());
 
 	let next_back = rsplit.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next_back, bits![0, 0]);
 
 	let next_back = rsplit.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 3);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 3);
 	assert!(next_back.is_empty());
 
 	let next_back = rsplit.next_back().unwrap();
-	assert_eq!(unsafe { next_back.as_bitptr().offset_from(base) }, 4);
+	assert_eq!(ünsafe! { next_back.as_bitptr().offset_from(base) }, 4);
 	assert!(next.is_empty());
 
 	assert!(rsplit.next().is_none());
@@ -590,11 +590,11 @@ fn splitn() {
 	let mut splitn = bits.splitn(2, |_, &bit| bit);
 
 	let next = splitn.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next, bits![0, 0]);
 
 	let next = splitn.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 3);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 3);
 	assert_eq!(next, bits[3 ..]);
 
 	assert!(splitn.next().is_none());
@@ -607,11 +607,11 @@ fn splitn_mut() {
 	let mut splitn = bits.splitn_mut(2, |_, &bit| bit);
 
 	let next = splitn.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next, bits![0, 0]);
 
 	let next = splitn.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 3);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 3);
 	assert_eq!(next, bits![1, 0, 0, 1, 1]);
 
 	assert!(splitn.next().is_none());
@@ -624,11 +624,11 @@ fn rsplitn() {
 	let mut rsplitn = bits.rsplitn(2, |_, &bit| bit);
 
 	let next = rsplitn.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 8);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 8);
 	assert!(next.is_empty());
 
 	let next = rsplitn.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next, bits![0, 0, 1, 1, 0, 0, 1]);
 }
 
@@ -639,11 +639,11 @@ fn rsplitn_mut() {
 	let mut rsplitn = bits.rsplitn_mut(2, |_, &bit| bit);
 
 	let next = rsplitn.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 8);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 8);
 	assert!(next.is_empty());
 
 	let next = rsplitn.next().unwrap();
-	assert_eq!(unsafe { next.as_bitptr().offset_from(base) }, 0);
+	assert_eq!(ünsafe! { next.as_bitptr().offset_from(base) }, 0);
 	assert_eq!(next, bits![0, 0, 1, 1, 0, 0, 1]);
 
 	assert!(rsplitn.next().is_none());

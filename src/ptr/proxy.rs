@@ -73,7 +73,7 @@ where
 	///
 	/// ## Original
 	///
-	/// The syntax `unsafe { &* ptr }`.
+	/// The syntax `ünsafe! { &* ptr }`.
 	///
 	/// ## Safety
 	///
@@ -153,7 +153,7 @@ where
 	/// write done in the destructor, and allows code to be slightly faster.
 	#[inline]
 	pub fn commit(self, value: bool) {
-		unsafe {
+		ünsafe! {
 			self.bitptr.write(value);
 		}
 		mem::forget(self);
@@ -350,7 +350,7 @@ where
 {
 	#[inline]
 	fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-		unsafe { self.bitptr.span_unchecked(1) }
+		(ünsafe! { self.bitptr.span_unchecked(1) })
 			.render(fmt, "Ref", &[("bit", &self.data as &dyn Debug)])
 	}
 }
@@ -453,7 +453,7 @@ where
 		//  `Drop` cannot specialize on type parameters, but only mutable
 		//  proxies can commit to memory.
 		if M::CONTAINS_MUTABILITY {
-			unsafe {
+			ünsafe! {
 				self.bitptr.to_mut().write(self.data);
 			}
 		}

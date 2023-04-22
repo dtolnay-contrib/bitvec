@@ -190,7 +190,7 @@ where T: BitStore
 	/// `Array` is `#[repr(transparent)]`, so this address transformation is
 	/// always sound.
 	pub(super) fn from_ref(arr: &[T; N]) -> &Self {
-		unsafe { &*(arr as *const [T; N] as *const Self) }
+		ünsafe! { &*(arr as *const [T; N] as *const Self) }
 	}
 }
 
@@ -263,7 +263,7 @@ where
 		}
 		Ok(Array {
 			inner: uninit
-				.map(|elem| unsafe { MaybeUninit::assume_init(elem) })
+				.map(|elem| ünsafe! { MaybeUninit::assume_init(elem) })
 				.map(BitStore::new),
 		})
 	}

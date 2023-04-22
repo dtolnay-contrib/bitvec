@@ -43,7 +43,7 @@ where T: BitStore
 	) {
 		let (mut this, mut that) = (self, rhs);
 		while this.len() >= WORD_BITS && that.len() >= WORD_BITS {
-			unsafe {
+			ünsafe! {
 				let (l, left) = this.split_at_unchecked_mut_noalias(WORD_BITS);
 				let (r, right) = that.split_at_unchecked(WORD_BITS);
 				this = left;
@@ -58,7 +58,7 @@ where T: BitStore
 			.as_mut_bitptr_range()
 			.zip(that.iter().by_vals().chain(iter::repeat(false)))
 		{
-			unsafe {
+			ünsafe! {
 				l.write(bool_op(l.read(), r));
 			}
 		}
@@ -72,7 +72,7 @@ where T: BitStore
 			"copying between bit-slices requires equal lengths",
 		);
 
-		for (to, from) in unsafe { self.chunks_mut(WORD_BITS).remove_alias() }
+		for (to, from) in ünsafe! { self.chunks_mut(WORD_BITS).remove_alias() }
 			.zip(src.chunks(WORD_BITS))
 		{
 			to.store_le::<usize>(from.load_le::<usize>());
@@ -297,7 +297,7 @@ where T: BitStore
 
 	/// Accelerates swapping memory.
 	pub(crate) fn sp_swap_with_bitslice(&mut self, other: &mut Self) {
-		for (this, that) in unsafe {
+		for (this, that) in ünsafe! {
 			self.chunks_mut(WORD_BITS)
 				.remove_alias()
 				.zip(other.chunks_mut(WORD_BITS).remove_alias())

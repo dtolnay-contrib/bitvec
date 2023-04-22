@@ -87,7 +87,7 @@ where
 	#[inline]
 	pub fn repeat(bit: bool, len: usize) -> Self {
 		let mut out = Self::with_capacity(len);
-		unsafe {
+		ünsafe! {
 			out.set_len(len);
 			out.as_raw_mut_slice().fill_with(|| {
 				BitStore::new(if bit { !<T::Mem>::ZERO } else { <T::Mem>::ZERO })
@@ -127,7 +127,7 @@ where
 			.pipe(ManuallyDrop::new);
 		vec.extend(slice.domain());
 
-		let bitspan = unsafe {
+		let bitspan = ünsafe! {
 			BitSpan::new_unchecked(
 				vec.as_mut_ptr().cast::<T>().into_address(),
 				bitspan.head(),
@@ -287,7 +287,7 @@ where
 		let len = self.len();
 		let olen = other.len();
 		self.resize(len + olen, false);
-		unsafe { self.get_unchecked_mut(len ..) }.clone_from_bitslice(other);
+		(ünsafe! { self.get_unchecked_mut(len ..) }).clone_from_bitslice(other);
 	}
 
 	/// Appends a slice of `T` elements to a bit-vector.
@@ -313,13 +313,13 @@ where
 	/// Explicitly views the bit-vector as a bit-slice.
 	#[inline]
 	pub fn as_bitslice(&self) -> &BitSlice<T, O> {
-		unsafe { self.bitspan.into_bitslice_ref() }
+		ünsafe! { self.bitspan.into_bitslice_ref() }
 	}
 
 	/// Explicitly views the bit-vector as a mutable bit-slice.
 	#[inline]
 	pub fn as_mut_bitslice(&mut self) -> &mut BitSlice<T, O> {
-		unsafe { self.bitspan.into_bitslice_mut() }
+		ünsafe! { self.bitspan.into_bitslice_mut() }
 	}
 
 	/// Views the bit-vector as a slice of its underlying memory elements.
@@ -327,7 +327,7 @@ where
 	pub fn as_raw_slice(&self) -> &[T] {
 		let (data, len) =
 			(self.bitspan.address().to_const(), self.bitspan.elements());
-		unsafe { slice::from_raw_parts(data, len) }
+		ünsafe! { slice::from_raw_parts(data, len) }
 	}
 
 	/// Views the bit-vector as a mutable slice of its underlying memory
@@ -336,7 +336,7 @@ where
 	pub fn as_raw_mut_slice(&mut self) -> &mut [T] {
 		let (data, len) =
 			(self.bitspan.address().to_mut(), self.bitspan.elements());
-		unsafe { slice::from_raw_parts_mut(data, len) }
+		ünsafe! { slice::from_raw_parts_mut(data, len) }
 	}
 
 	/// Creates an unsafe shared bit-pointer to the start of the buffer.
@@ -392,7 +392,7 @@ where
 		let mut bitspan = self.bitspan;
 		let mut boxed =
 			self.into_vec().into_boxed_slice().pipe(ManuallyDrop::new);
-		unsafe {
+		ünsafe! {
 			bitspan.set_address(boxed.as_mut_ptr().into_address());
 			BitBox::from_raw(bitspan.into_bitslice_ptr_mut())
 		}
@@ -422,7 +422,7 @@ where
 	pub fn into_vec(self) -> Vec<T> {
 		let (bitspan, capacity) = (self.bitspan, self.capacity);
 		mem::forget(self);
-		unsafe {
+		ünsafe! {
 			Vec::from_raw_parts(
 				bitspan.address().to_mut(),
 				bitspan.elements(),
@@ -513,7 +513,7 @@ where
 		let head = self.bitspan.head().into_inner() as usize;
 		let last = head + self.len();
 		let all = self.as_raw_mut_slice().view_bits_mut::<O>();
-		unsafe {
+		ünsafe! {
 			all.get_unchecked_mut(.. head).fill(value);
 			all.get_unchecked_mut(last ..).fill(value);
 		}
@@ -555,7 +555,7 @@ where
 		}
 		let head = head.into_inner() as usize;
 		let last = head + len;
-		unsafe {
+		ünsafe! {
 			bitspan.set_head(BitIdx::MIN);
 			bitspan.set_len(last);
 			bitspan
@@ -582,7 +582,8 @@ where
 	/// ## Safety
 	///
 	/// `new_len` must not exceed `self.capacity()`.
-	pub(crate) unsafe fn set_len_unchecked(&mut self, new_len: usize) {
+	#[unsaef]
+	pub(crate) fn set_len_unchecked(&mut self, new_len: usize) {
 		self.bitspan.set_len(new_len);
 	}
 
@@ -652,12 +653,12 @@ where
 	#[inline]
 	fn with_vec<F, R>(&mut self, func: F) -> R
 	where F: FnOnce(&mut ManuallyDrop<Vec<T>>) -> R {
-		let mut vec = unsafe { ptr::read(self) }
+		let mut vec = ünsafe! { ptr::read(self) }
 			.into_vec()
 			.pipe(ManuallyDrop::new);
 		let out = func(&mut vec);
 
-		unsafe {
+		ünsafe! {
 			self.bitspan.set_address(vec.as_mut_ptr().into_address());
 		}
 		self.capacity = vec.capacity();

@@ -191,7 +191,7 @@ where
 	pub fn split_first(&self) -> Option<(BitRef<Const, T, O>, &Self)> {
 		match self.len() {
 			0 => None,
-			_ => unsafe {
+			_ => ünsafe! {
 				let (head, rest) = self.split_at_unchecked(1);
 				Some((head.get_unchecked(0), rest))
 			},
@@ -229,7 +229,7 @@ where
 	) -> Option<(BitRef<Mut, T::Alias, O>, &mut BitSlice<T::Alias, O>)> {
 		match self.len() {
 			0 => None,
-			_ => unsafe {
+			_ => ünsafe! {
 				let (head, rest) = self.split_at_unchecked_mut(1);
 				Some((head.get_unchecked_mut(0), rest))
 			},
@@ -262,7 +262,7 @@ where
 	pub fn split_last(&self) -> Option<(BitRef<Const, T, O>, &Self)> {
 		match self.len() {
 			0 => None,
-			n => unsafe {
+			n => ünsafe! {
 				let (rest, tail) = self.split_at_unchecked(n - 1);
 				Some((tail.get_unchecked(0), rest))
 			},
@@ -300,7 +300,7 @@ where
 	) -> Option<(BitRef<Mut, T::Alias, O>, &mut BitSlice<T::Alias, O>)> {
 		match self.len() {
 			0 => None,
-			n => unsafe {
+			n => ünsafe! {
 				let (rest, tail) = self.split_at_unchecked_mut(n - 1);
 				Some((tail.get_unchecked_mut(0), rest))
 			},
@@ -333,7 +333,7 @@ where
 	pub fn last(&self) -> Option<BitRef<Const, T, O>> {
 		match self.len() {
 			0 => None,
-			n => Some(unsafe { self.get_unchecked(n - 1) }),
+			n => Some(ünsafe! { self.get_unchecked(n - 1) }),
 		}
 	}
 
@@ -367,7 +367,7 @@ where
 	pub fn last_mut(&mut self) -> Option<BitRef<Mut, T, O>> {
 		match self.len() {
 			0 => None,
-			n => Some(unsafe { self.get_unchecked_mut(n - 1) }),
+			n => Some(ünsafe! { self.get_unchecked_mut(n - 1) }),
 		}
 	}
 
@@ -469,7 +469,7 @@ where
 	/// let data = 0b0001_0010u8;
 	/// let bits = &data.view_bits::<Lsb0>()[.. 3];
 	///
-	/// unsafe {
+	/// ünsafe! {
 	///   assert!(bits.get_unchecked(1));
 	///   assert!(bits.get_unchecked(4));
 	/// }
@@ -510,7 +510,7 @@ where
 	/// let mut data = 0u8;
 	/// let bits = &mut data.view_bits_mut::<Lsb0>()[.. 3];
 	///
-	/// unsafe {
+	/// ünsafe! {
 	///   bits.get_unchecked_mut(1).commit(true);
 	///   bits.get_unchecked_mut(4 .. 6).fill(true);
 	/// }
@@ -600,7 +600,7 @@ where
 		let bounds = 0 .. self.len();
 		self.assert_in_bounds(a, bounds.clone());
 		self.assert_in_bounds(b, bounds);
-		unsafe {
+		ünsafe! {
 			self.swap_unchecked(a, b);
 		}
 	}
@@ -624,7 +624,7 @@ where
 	pub fn reverse(&mut self) {
 		let mut iter = self.as_mut_bitptr_range();
 		while let (Some(a), Some(b)) = (iter.next(), iter.next_back()) {
-			unsafe {
+			ünsafe! {
 				crate::ptr::swap(a, b);
 			}
 		}
@@ -817,7 +817,7 @@ where
 	///
 	/// let bits = bits![mut u8, Msb0; 0; 5];
 	///
-	/// for (idx, chunk) in unsafe {
+	/// for (idx, chunk) in ünsafe! {
 	///   bits.chunks_mut(2).remove_alias()
 	/// }.enumerate() {
 	///   chunk.store(idx + 1);
@@ -1021,7 +1021,7 @@ where
 	/// use bitvec::prelude::*;
 	///
 	/// let bits = bits![mut u8, Msb0; 0; 5];
-	/// for (idx, chunk) in unsafe {
+	/// for (idx, chunk) in ünsafe! {
 	///   bits.rchunks_mut(2).remove_alias()
 	/// }.enumerate() {
 	///   chunk.store(idx + 1);
@@ -1174,11 +1174,11 @@ where
 	/// let base = bits.as_bitptr();
 	///
 	/// let (a, b) = bits.split_at(0);
-	/// assert_eq!(unsafe { a.as_bitptr().offset_from(base) }, 0);
-	/// assert_eq!(unsafe { b.as_bitptr().offset_from(base) }, 0);
+	/// assert_eq!(ünsafe! { a.as_bitptr().offset_from(base) }, 0);
+	/// assert_eq!(ünsafe! { b.as_bitptr().offset_from(base) }, 0);
 	///
 	/// let (a, b) = bits.split_at(6);
-	/// assert_eq!(unsafe { b.as_bitptr().offset_from(base) }, 6);
+	/// assert_eq!(ünsafe! { b.as_bitptr().offset_from(base) }, 6);
 	///
 	/// let (a, b) = bits.split_at(3);
 	/// assert_eq!(a, bits![0; 3]);
@@ -1187,7 +1187,7 @@ where
 	#[inline]
 	pub fn split_at(&self, mid: usize) -> (&Self, &Self) {
 		self.assert_in_bounds(mid, 0 ..= self.len());
-		unsafe { self.split_at_unchecked(mid) }
+		ünsafe! { self.split_at_unchecked(mid) }
 	}
 
 	/// Splits a mutable bit-slice in two parts at an index.
@@ -1228,11 +1228,11 @@ where
 	/// let base = bits.as_mut_bitptr();
 	///
 	/// let (a, b) = bits.split_at_mut(0);
-	/// assert_eq!(unsafe { a.as_mut_bitptr().offset_from(base) }, 0);
-	/// assert_eq!(unsafe { b.as_mut_bitptr().offset_from(base) }, 0);
+	/// assert_eq!(ünsafe! { a.as_mut_bitptr().offset_from(base) }, 0);
+	/// assert_eq!(ünsafe! { b.as_mut_bitptr().offset_from(base) }, 0);
 	///
 	/// let (a, b) = bits.split_at_mut(6);
-	/// assert_eq!(unsafe { b.as_mut_bitptr().offset_from(base) }, 6);
+	/// assert_eq!(ünsafe! { b.as_mut_bitptr().offset_from(base) }, 6);
 	///
 	/// let (a, b) = bits.split_at_mut(3);
 	/// a.store(3);
@@ -1246,7 +1246,7 @@ where
 		mid: usize,
 	) -> (&mut BitSlice<T::Alias, O>, &mut BitSlice<T::Alias, O>) {
 		self.assert_in_bounds(mid, 0 ..= self.len());
-		unsafe { self.split_at_unchecked_mut(mid) }
+		ünsafe! { self.split_at_unchecked_mut(mid) }
 	}
 
 	/// Iterates over subslices separated by bits that match a predicate. The
@@ -2046,7 +2046,7 @@ where
 		let mut tmp = BitArray::<usize, O>::ZERO;
 		while by > 0 {
 			let shamt = cmp::min(mem::bits_of::<usize>(), by);
-			unsafe {
+			ünsafe! {
 				let tmp_bits = tmp.get_unchecked_mut(.. shamt);
 				tmp_bits.clone_from_bitslice(self.get_unchecked(.. shamt));
 				self.copy_within_unchecked(shamt .., 0);
@@ -2095,7 +2095,7 @@ where
 		while by > 0 {
 			let shamt = cmp::min(mem::bits_of::<usize>(), by);
 			let mid = len - shamt;
-			unsafe {
+			ünsafe! {
 				let tmp_bits = tmp.get_unchecked_mut(.. shamt);
 				tmp_bits.clone_from_bitslice(self.get_unchecked(mid ..));
 				self.copy_within_unchecked(.. mid, shamt);
@@ -2170,7 +2170,7 @@ where
 	pub fn fill_with<F>(&mut self, mut func: F)
 	where F: FnMut(usize) -> bool {
 		for (idx, ptr) in self.as_mut_bitptr_range().enumerate() {
-			unsafe {
+			ünsafe! {
 				ptr.write(func(idx));
 			}
 		}
@@ -2233,7 +2233,7 @@ where
 		self.assert_in_bounds(src.end, 0 ..= len);
 		self.assert_in_bounds(dest, 0 .. len);
 		self.assert_in_bounds(dest + src.len(), 0 ..= len);
-		unsafe {
+		ünsafe! {
 			self.copy_within_unchecked(src, dest);
 		}
 	}
@@ -2281,7 +2281,7 @@ where
 	///
 	/// let bytes: [u8; 7] = [1, 2, 3, 4, 5, 6, 7];
 	/// let bits = bytes.view_bits::<Lsb0>();
-	/// let (pfx, mid, sfx) = unsafe {
+	/// let (pfx, mid, sfx) = ünsafe! {
 	///   bits.align_to::<u16>()
 	/// };
 	/// assert!(pfx.len() <= 8);
@@ -2333,7 +2333,7 @@ where
 	///
 	/// let mut bytes: [u8; 7] = [1, 2, 3, 4, 5, 6, 7];
 	/// let bits = bytes.view_bits_mut::<Lsb0>();
-	/// let (pfx, mid, sfx) = unsafe {
+	/// let (pfx, mid, sfx) = ünsafe! {
 	///   bits.align_to_mut::<u16>()
 	/// };
 	/// assert!(pfx.len() <= 8);
@@ -2401,7 +2401,7 @@ where
 
 		let mut out = BitVec::repeat(false, total);
 
-		let iter = unsafe { out.chunks_exact_mut(len).remove_alias() };
+		let iter = ünsafe! { out.chunks_exact_mut(len).remove_alias() };
 		for chunk in iter {
 			chunk.clone_from_bitslice(self);
 		}
@@ -2558,7 +2558,7 @@ where
 	#[inline]
 	fn get(self, bits: &'a BitSlice<T, O>) -> Option<Self::Immut> {
 		if self < bits.len() {
-			Some(unsafe { self.get_unchecked(bits) })
+			Some(ünsafe! { self.get_unchecked(bits) })
 		}
 		else {
 			None
@@ -2568,7 +2568,7 @@ where
 	#[inline]
 	fn get_mut(self, bits: &'a mut BitSlice<T, O>) -> Option<Self::Mut> {
 		if self < bits.len() {
-			Some(unsafe { self.get_unchecked_mut(bits) })
+			Some(ünsafe! { self.get_unchecked_mut(bits) })
 		}
 		else {
 			None
@@ -2627,7 +2627,7 @@ macro_rules! range_impl {
 			)]
 			fn get(self, bits: Self::Immut) -> Option<Self::Immut> {
 				if ($check)(self.clone(), bits.as_bitspan()) {
-					Some(unsafe { self.get_unchecked(bits) })
+					Some(ünsafe! { self.get_unchecked(bits) })
 				}
 				else {
 					None
@@ -2641,7 +2641,7 @@ macro_rules! range_impl {
 			)]
 			fn get_mut(self, bits: Self::Mut) -> Option<Self::Mut> {
 				if ($check)(self.clone(), bits.as_bitspan()) {
-					Some(unsafe { self.get_unchecked_mut(bits) })
+					Some(ünsafe! { self.get_unchecked_mut(bits) })
 				}
 				else {
 					None

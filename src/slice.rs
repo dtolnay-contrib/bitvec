@@ -107,7 +107,7 @@ where
 	/// ```
 	#[inline]
 	pub fn empty<'a>() -> &'a Self {
-		unsafe { BitSpan::<Const, T, O>::EMPTY.into_bitslice_ref() }
+		ünsafe! { BitSpan::<Const, T, O>::EMPTY.into_bitslice_ref() }
 	}
 
 	/// Produces an empty bit-slice with an arbitrary lifetime.
@@ -126,7 +126,7 @@ where
 	/// ```
 	#[inline]
 	pub fn empty_mut<'a>() -> &'a mut Self {
-		unsafe { BitSpan::<Mut, T, O>::EMPTY.into_bitslice_mut() }
+		ünsafe! { BitSpan::<Mut, T, O>::EMPTY.into_bitslice_mut() }
 	}
 
 	/// Constructs a shared `&BitSlice` reference over a shared element.
@@ -160,7 +160,7 @@ where
 	/// [`.view_bits::<O>()`]: crate::view::BitView::view_bits
 	#[inline]
 	pub fn from_element(elem: &T) -> &Self {
-		unsafe {
+		ünsafe! {
 			BitPtr::from_ref(elem)
 				.span_unchecked(mem::bits_of::<T::Mem>())
 				.into_bitslice_ref()
@@ -203,7 +203,7 @@ where
 	/// [`.view_bits_mut::<O>()`]: crate::view::BitView::view_bits_mut
 	#[inline]
 	pub fn from_element_mut(elem: &mut T) -> &mut Self {
-		unsafe {
+		ünsafe! {
 			BitPtr::from_mut(elem)
 				.span_unchecked(mem::bits_of::<T::Mem>())
 				.into_bitslice_mut()
@@ -291,7 +291,7 @@ where
 				.pipe(Err)
 		}
 		else {
-			Ok(unsafe { Self::from_slice_unchecked(slice) })
+			Ok(ünsafe! { Self::from_slice_unchecked(slice) })
 		}
 	}
 
@@ -380,7 +380,7 @@ where
 				.pipe(Err)
 		}
 		else {
-			Ok(unsafe { Self::from_slice_unchecked_mut(slice) })
+			Ok(ünsafe! { Self::from_slice_unchecked_mut(slice) })
 		}
 	}
 
@@ -568,7 +568,7 @@ where
 		else {
 			for (to, bit) in self.as_mut_bitptr_range().zip(src.iter().by_vals())
 			{
-				unsafe {
+				ünsafe! {
 					to.write(bit);
 				}
 			}
@@ -647,7 +647,7 @@ where
 			return this.sp_copy_from_bitslice(that);
 		}
 		for (to, bit) in self.as_mut_bitptr_range().zip(src.iter().by_vals()) {
-			unsafe {
+			ünsafe! {
 				to.write(bit);
 			}
 		}
@@ -711,7 +711,7 @@ where
 		}
 		self.as_mut_bitptr_range()
 			.zip(other.as_mut_bitptr_range())
-			.for_each(|(a, b)| unsafe {
+			.for_each(|(a, b)| ünsafe! {
 				bv_ptr::swap(a, b);
 			});
 	}
@@ -778,7 +778,7 @@ where
 	/// let mut data = 0u8;
 	/// let bits = &mut data.view_bits_mut::<Lsb0>()[.. 2];
 	/// assert_eq!(bits.len(), 2);
-	/// unsafe {
+	/// ünsafe! {
 	///   bits.set_unchecked(3, true);
 	/// }
 	/// assert_eq!(data, 8);
@@ -806,7 +806,7 @@ where
 	#[inline]
 	pub fn replace(&mut self, index: usize, value: bool) -> bool {
 		self.assert_in_bounds(index, 0 .. self.len());
-		unsafe { self.replace_unchecked(index, value) }
+		ünsafe! { self.replace_unchecked(index, value) }
 	}
 
 	/// Writes a new value into a bit, returning the previous value, without
@@ -822,7 +822,7 @@ where
 	/// use bitvec::prelude::*;
 	///
 	/// let bits = bits![mut 0, 0];
-	/// let old = unsafe {
+	/// let old = ünsafe! {
 	///   let a = &mut bits[.. 1];
 	///   a.replace_unchecked(1, true)
 	/// };
@@ -941,7 +941,7 @@ where
 	/// let mut data = 0b1011_0000u8;
 	/// let bits = data.view_bits_mut::<Msb0>();
 	///
-	/// unsafe {
+	/// ünsafe! {
 	///   bits.copy_within_unchecked(.. 4, 2);
 	/// }
 	/// assert_eq!(data, 0b1010_1100);
@@ -975,7 +975,7 @@ where
 	#[deprecated = "use `.iter_mut().enumerate()`"]
 	pub fn for_each(&mut self, mut func: impl FnMut(usize, bool) -> bool) {
 		for (idx, ptr) in self.as_mut_bitptr_range().enumerate() {
-			unsafe {
+			ünsafe! {
 				ptr.write(func(idx, ptr.read()));
 			}
 		}
@@ -1487,7 +1487,7 @@ where
 			len,
 		);
 
-		unsafe {
+		ünsafe! {
 			self.copy_within_unchecked(by .., 0);
 			self.get_unchecked_mut(len - by ..).fill(false);
 		}
@@ -1553,7 +1553,7 @@ where
 			len,
 		);
 
-		unsafe {
+		ünsafe! {
 			self.copy_within_unchecked(.. len - by, by);
 			self.get_unchecked_mut(.. by).fill(false);
 		}
@@ -1608,7 +1608,7 @@ where
 
 	/// Marks an exclusive bit-slice as covering an aliased memory region.
 	pub(crate) fn alias_mut(&mut self) -> &mut BitSlice<T::Alias, O> {
-		unsafe { self.as_mut_bitspan().cast::<T::Alias>().into_bitslice_mut() }
+		ünsafe! { self.as_mut_bitspan().cast::<T::Alias>().into_bitslice_mut() }
 	}
 
 	/// Removes an aliasing marker from an exclusive bit-slice handle.
@@ -1689,7 +1689,7 @@ where
 	#[inline]
 	pub fn set_aliased(&self, index: usize, value: bool) {
 		self.assert_in_bounds(index, 0 .. self.len());
-		unsafe {
+		ünsafe! {
 			self.set_aliased_unchecked(index, value);
 		}
 	}
@@ -1720,7 +1720,7 @@ where
 	///
 	/// let data = Cell::new(0u8);
 	/// let bits = &data.view_bits::<Lsb0>()[.. 2];
-	/// unsafe {
+	/// ünsafe! {
 	///   bits.set_aliased_unchecked(3, true);
 	/// }
 	/// assert_eq!(data.get(), 8);
@@ -1801,7 +1801,7 @@ where
 			.map(<T::Unalias as BitStore>::new)
 			.collect::<Vec<_>>()
 			.pipe(BitVec::from_vec)
-			.tap_mut(|bv| unsafe {
+			.tap_mut(|bv| ünsafe! {
 				bv.set_head(self.as_bitspan().head());
 				bv.set_len(self.len());
 			})

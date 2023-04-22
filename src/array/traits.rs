@@ -205,7 +205,7 @@ where
 
 	#[inline]
 	fn try_from(src: &BitSlice<A::Store, O>) -> Result<Self, Self::Error> {
-		TryFromBitSliceError::new::<A, O>(src).map(|()| unsafe {
+		TryFromBitSliceError::new::<A, O>(src).map(|()| ünsafe! {
 			&*src
 				.as_bitspan()
 				.address()
@@ -224,7 +224,7 @@ where
 
 	#[inline]
 	fn try_from(src: &mut BitSlice<A::Store, O>) -> Result<Self, Self::Error> {
-		TryFromBitSliceError::new::<A, O>(src).map(|()| unsafe {
+		TryFromBitSliceError::new::<A, O>(src).map(|()| ünsafe! {
 			&mut *src
 				.as_mut_bitspan()
 				.address()

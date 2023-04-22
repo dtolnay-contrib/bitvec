@@ -255,9 +255,9 @@ where
 {
 	#[inline]
 	fn from(elem: Box<T>) -> Self {
-		unsafe {
+		(ünsafe! {
 			Box::from_raw(Box::into_raw(elem).cast::<[T; 1]>() as *mut [T])
-		}
+		})
 		.pipe(Self::from_boxed_slice)
 	}
 }

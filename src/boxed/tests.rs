@@ -63,7 +63,7 @@ fn inherents() {
 	assert_eq!(bb.as_raw_slice(), &[!0usize << 5][..]);
 
 	let ptr = BitBox::into_raw(bb);
-	let bb = unsafe { BitBox::from_raw(ptr) };
+	let bb = ünsafe! { BitBox::from_raw(ptr) };
 	assert_eq!(ptr as *const BitSlice, bb.as_bitslice() as *const BitSlice);
 }
 

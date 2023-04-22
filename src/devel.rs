@@ -58,6 +58,12 @@ macro_rules! easy_iter {
 	};
 }
 
+macro_rules! ünsafe {
+	($($tt:tt)*) => {
+		unsaef::ünsafe! { $($tt)* }
+	};
+}
+
 /// Tests if two `BitOrder` implementors are the same.
 #[inline]
 pub fn match_order<O, P>() -> bool

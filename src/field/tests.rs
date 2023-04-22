@@ -264,7 +264,7 @@ fn read_bits() {
 	let base = data.view_bits::<Msb0>().as_bitptr();
 	let mut bits = &data.view_bits::<Msb0>()[4 ..];
 
-	assert_eq!(unsafe { bits.as_bitptr().offset_from(base) }, 4);
+	assert_eq!(ünsafe! { bits.as_bitptr().offset_from(base) }, 4);
 	assert_eq!(bits.len(), 28);
 
 	let mut transfer = [0u8; 4];
@@ -272,7 +272,7 @@ fn read_bits() {
 	let mut transfer_handle = &mut transfer[..];
 
 	assert_eq!(io::copy(&mut bits, &mut transfer_handle).unwrap(), 3);
-	assert_eq!(unsafe { bits.as_bitptr().offset_from(base) }, 28);
+	assert_eq!(ünsafe! { bits.as_bitptr().offset_from(base) }, 28);
 	assert_eq!(transfer_handle.as_mut_ptr() as *mut _, last_ptr);
 	assert_eq!(transfer[.. 3], [0x36, 0xC8, 0xC6][..]);
 
@@ -302,13 +302,13 @@ fn write_bits() {
 	let mut data = [0u8; 4];
 	let base = data.view_bits_mut::<Lsb0>().as_mut_bitptr();
 	let mut bits = &mut data.view_bits_mut::<Lsb0>()[4 ..];
-	assert_eq!(unsafe { bits.as_mut_bitptr().offset_from(base) }, 4);
+	assert_eq!(ünsafe! { bits.as_mut_bitptr().offset_from(base) }, 4);
 	assert_eq!(bits.len(), 28);
 	assert_eq!(
 		io::copy(&mut &[0xA5u8, 0xB4, 0x3C][..], &mut bits).unwrap(),
 		3,
 	);
-	assert_eq!(unsafe { bits.as_mut_bitptr().offset_from(base) }, 28);
+	assert_eq!(ünsafe! { bits.as_mut_bitptr().offset_from(base) }, 28);
 	assert_eq!(bits.len(), 4);
 
 	assert_eq!(data, [0b1010_0000, 0b1011_0101, 0b0011_0100, 0b0000_1100]);
